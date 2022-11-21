@@ -1,47 +1,58 @@
+import Exceptions.InvalidNumberException;
+
 
 //+7 (xxx) xxx-xx-xx
 public class Number {
-    private String s;
-    public Number(String s){
-        this.s = s;
-    }
-    //метод, приводящий номер к стандарту
-    public void standard() {
-        if (s.contains("+") == false){
-            s = s.replaceFirst("8", "+7");
-        }
-        s = s.replaceAll(" ", "");
-        s = s.replaceAll("\\p{P}", "");
-        s = s.replaceAll("-", "");
-        ExceptionsForNumber forNumber = new ExceptionsForNumber();
-        if (s.length() != 12){
-            try{
-                forNumber.NumberCheck();
-            }
+    private String number;
 
-            catch (ExceptionsForNumber e){
+    public Number(String number) throws InvalidNumberException {
+        this.number = setNumber(number);
+    }
+
+    public Number() {
+
+    }
+
+    public String setNumber(String number) throws InvalidNumberException {
+        if ((!(number.startsWith("+7")) && number.length() == 13) || 
+            (!(number.startsWith("8")) && number.length() == 12)) {
+            throw new InvalidNumberException("Номер должен начинаться с \"+7\" или с \"8\".");
+        }
+        this.number = number;
+        return number;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    // метод, приводящий номер к стандарту
+    public String ConvertToStandard(){
+        if (number.contains("+") == false){
+            number = number.replaceFirst("8", "+7");
+        }
+        number = number.replaceAll(" ", "");
+        number = number.replaceAll("\\p{P}", "");
+        number = number.replaceAll("-", "");
+
+        char[] z = number.toCharArray();
+        number = "";
+        for (int k = 0; k < z.length; k++) {
+            number += z[k];
+            if (k == 1 && z[2] != '(') {
+                number += " (";
+            }
+            if (k == 4 && z[6] != ')') {
+                number += ") ";
+            }
+            if (k == 7 && z[10] != '-') {
+                number += "-";
+            }
+            if (k == 9 && z[10] != '-') {
+                number += "-";
             }
         }
-        else {
-            char[] z = s.toCharArray();
-            s = "";
-            for (int k = 0; k < z.length; k++) {
-                s += z[k];
-                if (k == 1 && z[2] != '(') {
-                    s += " (";
-                }
-                if (k == 4 && z[6] != ')') {
-                    s += ") ";
-                }
-                if (k == 7 && z[10] != '-') {
-                    s += "-";
-                }
-                if (k == 9 && z[10] != '-') {
-                    s += "-";
-                }
-            }
-            System.out.println(s);
-        }
+        return number;
     }
 }
 
