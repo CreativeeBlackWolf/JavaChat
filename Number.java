@@ -1,7 +1,6 @@
 import Exceptions.InvalidNumberException;
 
 
-//+7 (xxx) xxx-xx-xx
 public class Number {
     private String number;
 
@@ -26,7 +25,7 @@ public class Number {
         return number;
     }
 
-    // метод, приводящий номер к стандарту
+    // метод, приводящий номер к стандарту +7 (xxx) xxx-xx-xx
     public String ConvertToStandard(){
         if (number.contains("+") == false){
             number = number.replaceFirst("8", "+7");
