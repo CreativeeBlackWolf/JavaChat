@@ -1,9 +1,11 @@
 import java.io.IOException;
 import java.io.InvalidObjectException;
+import java.sql.SQLException;
 import java.util.Scanner;
 import Exceptions.InvalidNameException;
 import Exceptions.InvalidNumberException;
 import Exceptions.InvalidPasswordException;
+import Database.DatabaseWorker;
 
 
 public class Main {
@@ -24,6 +26,15 @@ public class Main {
             throw new InvalidObjectException("Объект пользователя инициализирован неверно."); 
         }
         
+        DatabaseWorker worker = new DatabaseWorker();
+
+        try {
+            worker.Connect("./users.db");
+        } catch (SQLException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+
         while (user.number.getNumber() == null) {
             try {
                 System.out.print("Введите номер телефона: ");
