@@ -8,6 +8,10 @@ public class Number {
         this.number = setNumber(number);
     }
 
+    public Number() {
+        
+    }
+
     public String setNumber(String number) throws InvalidNumberException {
         if ((!(number.startsWith("+7")) && number.length() == 13) || 
             (!(number.startsWith("8")) && number.length() == 12)) {
