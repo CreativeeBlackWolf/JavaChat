@@ -3,6 +3,7 @@ import java.io.InvalidObjectException;
 import java.util.Scanner;
 import Exceptions.InvalidNameException;
 import Exceptions.InvalidNumberException;
+import Exceptions.InvalidPasswordException;
 
 
 public class Main {
@@ -14,9 +15,9 @@ public class Main {
             user = new User("Jason",
                             "Voorheese",
                             "69",
-                            "java1", 
+                            "Test1test",
                             number);
-        } catch (InvalidNameException e1) {
+        } catch (InvalidNameException | InvalidPasswordException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
             input.close();
@@ -30,6 +31,7 @@ public class Main {
                 System.out.println(user.number.ConvertToStandard());
                 System.out.println(user.getName());
                 System.out.println(user.getLastName());
+                System.out.println(user.getPassword());
                 System.out.println(user.getStatusMessage());
             }
             catch (InvalidNumberException e) {

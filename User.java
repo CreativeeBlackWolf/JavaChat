@@ -1,4 +1,5 @@
 import Exceptions.InvalidNameException;
+import Exceptions.InvalidPasswordException;
 import java.util.regex.*;
 
 public class User {
@@ -9,7 +10,8 @@ public class User {
     public Number number;
 
 
-    public User(String name, String lastName, String statusMessage, String password, Number number) throws InvalidNameException{
+    public User(String name, String lastName, String statusMessage, String password, Number number) throws InvalidNameException, InvalidPasswordException{
+        this.password = setPassword(password);
         this.number = number;
         this.name = setName(name);
         this.lastName = setLastName(lastName);
@@ -40,24 +42,22 @@ public class User {
         return statusMessage;
     }
 
-    public String setPassword(String password) throws InvalidNameException {
-        String regex = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{8,32}$";
+    public String setPassword(String password) throws InvalidPasswordException {
+        String regex = "(?=^.{8,32}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$";
         Pattern p = Pattern.compile(regex);
 
         if (password.isBlank()) {
-            // TODO: should be InvalidPasswordException
-            throw new InvalidNameException("Пароль ОБЯЗАН НАХУЙ НЕ быть пустым.");
+            throw new InvalidPasswordException("Пароль ОБЯЗАН НАХУЙ НЕ быть пустым.");
         }
 
         Matcher m = p.matcher(password);
 
         if (!(m.matches())) {
-            // TODO: should be InvalidPasswordException
-            throw new InvalidNameException("Пароль ОБЯЗАН НАХУЙ иметь как минимум ОДИН уникальный символ, " +
+            throw new InvalidPasswordException("Пароль ОБЯЗАН НАХУЙ иметь как минимум ОДИН уникальный символ, " +
                                            "иметь как минимум один символ в верхнем и нижнем регистре и одну цифру, " +
                                            "а также быть от 8 до 32 символов.");
         }
-
+        this.password = password;
         return password;
     }
 
