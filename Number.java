@@ -8,10 +8,6 @@ public class Number {
         this.number = setNumber(number);
     }
 
-    public Number() {
-
-    }
-
     public String setNumber(String number) throws InvalidNumberException {
         if ((!(number.startsWith("+7")) && number.length() == 13) || 
             (!(number.startsWith("8")) && number.length() == 12)) {
@@ -27,30 +23,14 @@ public class Number {
 
     // метод, приводящий номер к стандарту +7 (xxx) xxx-xx-xx
     public String ConvertToStandard(){
-        if (number.contains("+") == false){
+        if (!number.contains("+")){
             number = number.replaceFirst("8", "+7");
         }
         number = number.replaceAll(" ", "");
         number = number.replaceAll("\\p{P}", "");
         number = number.replaceAll("-", "");
+        number = number.replaceFirst("(\\d)(\\d{3})(\\d{3})(\\d{2})(\\d+)", "$1 ($2) $3-$4-$5");
 
-        char[] z = number.toCharArray();
-        number = "";
-        for (int k = 0; k < z.length; k++) {
-            number += z[k];
-            if (k == 1 && z[2] != '(') {
-                number += " (";
-            }
-            if (k == 4 && z[6] != ')') {
-                number += ") ";
-            }
-            if (k == 7 && z[10] != '-') {
-                number += "-";
-            }
-            if (k == 9 && z[10] != '-') {
-                number += "-";
-            }
-        }
         return number;
     }
 }
