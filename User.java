@@ -1,70 +1,80 @@
-import java.util.Date;
-import java.text.SimpleDateFormat;
-import java.io.*;
-
+import Exceptions.InvalidNameException;
+import Exceptions.InvalidPasswordException;
+import java.util.regex.*;
 
 public class User {
     private String name;
     private String lastName;
-    private int age;
+    private String statusMessage;
     private String password;
-    private String message;
+    public Number number;
 
-    //сеттер для юзера
-    public User(String name, String lastName, int age, String password, String message) throws IOException{
-        ExceptionsForName forName = new ExceptionsForName();
-        char firstSymbolName = name.charAt(0);
-        char firstSymbolLastName = lastName.charAt(0);
-        if(Character.isLowerCase(firstSymbolName) || Character.isLowerCase(firstSymbolLastName)
-                || name.contains(" ") || name.isEmpty()
-                || lastName.contains(" ") || lastName.isEmpty()){
-            try{
-                forName.NameCheck();
-            }
 
-            catch(ExceptionsForName e){
-            }
-        }
-        else {
-            this.name = name;
-            this.lastName = lastName;
-        }
-        ExceptionsForChat forAge = new ExceptionsForChat();
-        if(age < 0 || age > 120){
-            try{
-                forAge.ChatCheck();
-            }
-            catch(ExceptionsForChat e){
-            }
-        }
-        else this.age = age;
-
-        this.password = password;
-        this.message = message;
+    public User(String name, String lastName, String statusMessage, String password, Number number) throws InvalidNameException, InvalidPasswordException{
+        this.password = setPassword(password);
+        this.number = number;
+        this.name = setName(name);
+        this.lastName = setLastName(lastName);
+        this.statusMessage = setStatusMessage(statusMessage);
     }
-    public String OutName(){
+
+    public String setName(String name) throws InvalidNameException {
+        if (name.isBlank() || name.contains(" ") || name.length() > 16) {
+            throw new InvalidNameException("Имя не должно быть пустым, не должно содержать пробелов и быть длиннее 16 символов.");
+        }
+        this.name = name;
         return name;
     }
-    public String OutSecondName(){
+
+    public String setLastName(String lastName) throws InvalidNameException {
+        if (lastName.isBlank() || lastName.contains(" ") || lastName.length() > 20) {
+            throw new InvalidNameException("Фамилия не должна быть пустой, не должна содержать пробелов и быть длиннее 20 символов.");
+        }
+        this.lastName = lastName;
         return lastName;
     }
-    public String OutPassword(){
+
+    public String setStatusMessage(String statusMessage) throws InvalidNameException {
+        if (statusMessage.length() > 128) {
+            throw new InvalidNameException("Длина статуса не должна привышать 128 символов.");
+        }
+        this.statusMessage = statusMessage;
+        return statusMessage;
+    }
+
+    public String setPassword(String password) throws InvalidPasswordException {
+        String regex = "(?=^.{8,32}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$";
+        Pattern p = Pattern.compile(regex);
+
+        if (password.isBlank()) {
+            throw new InvalidPasswordException("Пароль ОБЯЗАН НАХУЙ НЕ быть пустым.");
+        }
+
+        Matcher m = p.matcher(password);
+
+        if (!(m.matches())) {
+            throw new InvalidPasswordException("Пароль ОБЯЗАН НАХУЙ иметь как минимум ОДИН уникальный символ, " +
+                                           "иметь как минимум один символ в верхнем и нижнем регистре и одну цифру, " +
+                                           "а также быть от 8 до 32 символов.");
+        }
+        this.password = password;
         return password;
     }
-    public String OutMessage(){
-        return message;
+
+    public String getName() {
+        return name;
     }
-    public void message(){
-        Date date = new Date();
-        SimpleDateFormat timeFormat = new SimpleDateFormat("dd.MM.YY HH:mm:ss");
-        String time = timeFormat.format(date);
-        try(FileWriter writer = new FileWriter("log.txt", false)){
-            String text = "Время отправления: " + time + "\n" +
-                    "Отправитель: " + name + " " + lastName + "\n" + "Сообщение: " + message;
-            writer.write(text);
-        }
-        catch(IOException ex){
-            System.out.println(ex.getMessage());
-        }
+
+    public String getLastName() {
+        return lastName;
     }
+
+    public String getStatusMessage() {
+        return statusMessage;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
 }
