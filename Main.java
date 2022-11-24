@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.util.Scanner;
+
+import Exceptions.InvalidMessageException;
 import Exceptions.InvalidNameException;
 import Exceptions.InvalidNumberException;
 import Exceptions.InvalidPasswordException;
@@ -33,8 +35,9 @@ public class Main {
                 System.out.println(user.getLastName());
                 System.out.println(user.getPassword());
                 System.out.println(user.getStatusMessage());
+                user.sendMessage("Text Message");
             }
-            catch (InvalidNumberException e) {
+            catch (InvalidNumberException | InvalidMessageException e) {
                 System.out.println(e);
             }
         }

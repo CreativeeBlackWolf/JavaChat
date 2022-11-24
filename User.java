@@ -1,6 +1,9 @@
 import Exceptions.InvalidNameException;
 import Exceptions.InvalidPasswordException;
+import Exceptions.InvalidMessageException;
 import java.util.regex.*;
+import java.util.Date;
+import chatLogger.Logger;
 
 public class User {
     private String name;
@@ -75,6 +78,18 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public void sendMessage(String message) throws InvalidMessageException{
+        if (message.isBlank()){
+            throw new InvalidMessageException("Message cannot be empty.");
+        }
+        else{
+            Logger log = new Logger();
+            Date date = new Date();
+            String text = (name + " " + lastName + "\n " + date + ":\n " + message + "\n");
+            log.WriteLog(text);
+        }
     }
 
 }
