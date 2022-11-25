@@ -5,6 +5,7 @@ import java.io.InvalidObjectException;
 import java.sql.SQLException;
 import java.util.Scanner;
 
+import chat.Shared.Database.DatabaseWorker;
 import chat.Shared.Exceptions.InvalidNameException;
 import chat.Shared.Exceptions.InvalidNumberException;
 import chat.Shared.Exceptions.InvalidPasswordException;
