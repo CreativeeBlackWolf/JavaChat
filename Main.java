@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.io.InvalidObjectException;
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -30,10 +31,14 @@ public class Main {
 
         try {
             worker.Connect("./users.db");
+            System.out.println(worker.TableExists("Users"));
         } catch (SQLException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
+            input.close();
+            throw new InterruptedIOException();
         }
+
 
         while (user.number.getNumber() == null) {
             try {

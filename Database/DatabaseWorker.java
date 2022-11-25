@@ -12,14 +12,32 @@ public class DatabaseWorker {
     
     }
 
+    public DatabaseWorker(String dbPath) throws SQLException {
+        Connect(dbPath);
+    }
+
     public boolean Connect(String dbPath) throws SQLException {
-        if (!(connection.isClosed())) {
-            // should throw ConnectionNotClosedException
+        if (connection != null) {
+            if (!(connection.isClosed())) {
+                // should throw ConnectionNotClosedException
+            }
         }
         connection = null;
         connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+        stmt = connection.createStatement();
 
-        return true;
+        return connection.isValid(0);
+    }
+
+    public boolean TableExists(String tableName) throws SQLException {
+        DatabaseMetaData meta = connection.getMetaData();
+        result = meta.getTables(null, null, tableName, new String[] {"TABLE"});
+        
+        return result.next();
+    }
+
+    public boolean CreateTable(String tableName) {
+        return false;
     }
 
     public boolean Close() throws SQLException {
@@ -27,7 +45,7 @@ public class DatabaseWorker {
         stmt.close();
         result.close();
 
-        return true;
+        return connection.isClosed() && stmt.isClosed() && result.isClosed();
     }
 
 }
