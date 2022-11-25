@@ -1,4 +1,4 @@
-package Database;
+package chat.Shared.Database;
 
 import java.sql.*;
 
