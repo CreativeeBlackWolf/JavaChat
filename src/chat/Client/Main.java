@@ -1,12 +1,13 @@
+package chat.Client;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.io.InvalidObjectException;
 import java.sql.SQLException;
 import java.util.Scanner;
-import Exceptions.InvalidNameException;
-import Exceptions.InvalidNumberException;
-import Exceptions.InvalidPasswordException;
-import Database.DatabaseWorker;
+
+import chat.Shared.Exceptions.InvalidNameException;
+import chat.Shared.Exceptions.InvalidNumberException;
+import chat.Shared.Exceptions.InvalidPasswordException;
 
 
 public class Main {
