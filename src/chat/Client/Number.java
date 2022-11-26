@@ -1,4 +1,5 @@
-import Exceptions.InvalidNumberException;
+package chat.Client;
+import chat.Shared.Exceptions.InvalidNumberException;
 
 
 public class Number {
@@ -8,9 +9,13 @@ public class Number {
         this.number = setNumber(number);
     }
 
+    public Number() {
+        
+    }
+
     public String setNumber(String number) throws InvalidNumberException {
-        if ((!(number.startsWith("+7")) && number.length() == 13) || 
-            (!(number.startsWith("8")) && number.length() == 12)) {
+        if ((!(number.startsWith("+7")) && number.length() == 12) || 
+            (!(number.startsWith("8")) && number.length() == 11)) {
             throw new InvalidNumberException("Номер должен начинаться с \"+7\" или с \"8\".");
         }
         this.number = number;
