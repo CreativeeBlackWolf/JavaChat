@@ -1,5 +1,5 @@
-package chat.Client;
-import chat.Shared.Exceptions.InvalidNumberException;
+package src.chat.Client;
+import src.chat.Shared.Exceptions.InvalidNumberException;
 
 
 public class Number {
@@ -14,10 +14,22 @@ public class Number {
     }
 
     public String setNumber(String number) throws InvalidNumberException {
-        if ((!(number.startsWith("+7")) && number.length() == 12) || 
-            (!(number.startsWith("8")) && number.length() == 11)) {
+        if (!(number.startsWith("+7")) && !(number.startsWith("8"))) {
             throw new InvalidNumberException("Номер должен начинаться с \"+7\" или с \"8\".");
         }
+
+        int count = 0;
+
+        for(int i = 0; i < number.length(); i++)
+        {
+            if(Character.isDigit(number.charAt(i)))
+                count++;
+        }
+
+        if (count != 11){
+            throw new InvalidNumberException("В номере не должно быть больше или меньше 11-и цифр");
+        }
+
         this.number = number;
         return number;
     }
