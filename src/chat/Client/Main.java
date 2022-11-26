@@ -1,8 +1,11 @@
 package src.chat.Client;
+
 import java.io.IOException;
 import java.io.InvalidObjectException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
+import src.chat.Shared.Ecryption.PasswordHash;
 import src.chat.Shared.Exceptions.InvalidNameException;
 import src.chat.Shared.Exceptions.InvalidNumberException;
 import src.chat.Shared.Exceptions.InvalidPasswordException;
@@ -42,5 +45,11 @@ public class Main {
         }
 
         input.close();
+
+        try {
+            System.out.println(PasswordHash.getPasswordHash(user.getPassword()));
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
