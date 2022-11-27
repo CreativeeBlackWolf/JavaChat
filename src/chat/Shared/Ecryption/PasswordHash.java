@@ -1,4 +1,4 @@
-package src.chat.Shared.Ecryption;
+package chat.Shared.Ecryption;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;

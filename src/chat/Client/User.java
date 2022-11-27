@@ -1,9 +1,9 @@
-package src.chat.Client;
+package chat.Client;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import src.chat.Shared.Exceptions.InvalidNameException;
-import src.chat.Shared.Exceptions.InvalidPasswordException;
+import chat.Shared.Exceptions.InvalidNameException;
+import chat.Shared.Exceptions.InvalidPasswordException;
 
 public class User {
     private String name;

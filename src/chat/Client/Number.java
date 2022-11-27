@@ -1,5 +1,5 @@
-package src.chat.Client;
-import src.chat.Shared.Exceptions.InvalidNumberException;
+package chat.Client;
+import chat.Shared.Exceptions.InvalidNumberException;
 
 
 public class Number {

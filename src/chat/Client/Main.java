@@ -1,14 +1,14 @@
-package src.chat.Client;
+package chat.Client;
 
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
-import src.chat.Shared.Ecryption.PasswordHash;
-import src.chat.Shared.Exceptions.InvalidNameException;
-import src.chat.Shared.Exceptions.InvalidNumberException;
-import src.chat.Shared.Exceptions.InvalidPasswordException;
+import chat.Shared.Ecryption.PasswordHash;
+import chat.Shared.Exceptions.InvalidNameException;
+import chat.Shared.Exceptions.InvalidNumberException;
+import chat.Shared.Exceptions.InvalidPasswordException;
 
 
 public class Main {
