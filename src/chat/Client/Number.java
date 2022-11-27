@@ -27,7 +27,7 @@ public class Number {
         }
 
         if (count != 11){
-            throw new InvalidNumberException("В номере не должно быть больше или меньше 11-и цифр");
+            throw new InvalidNumberException("Номер должен содержать 11 цифр.");
         }
 
         this.number = number;
