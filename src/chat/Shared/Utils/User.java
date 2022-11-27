@@ -16,7 +16,12 @@ public class User {
     public Number number;
 
 
-    public User(String username,String name, String lastName, String statusMessage, String password, Number number) throws InvalidNameException, InvalidPasswordException{
+    public User(String username,
+                String name,
+                String lastName,
+                String statusMessage,
+                String password,
+                Number number) throws InvalidNameException, InvalidPasswordException {
         this.username = username;
         this.password = setPassword(password);
         this.number = number;
