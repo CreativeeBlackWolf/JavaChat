@@ -2,6 +2,7 @@ package chat.Shared.Database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -13,7 +14,7 @@ public class UserDatabaseWorker {
 
     public UserDatabaseWorker() {
         try {
-            worker = new DatabaseWorker("./Users.db");
+            worker = new DatabaseWorker("./users.db");
             connection = worker.getConnection();
 
             InitializeUsersDatabase();
@@ -46,6 +47,10 @@ public class UserDatabaseWorker {
         }
     }
 
+    /** Добавляет пользователя в базу данных.
+     * @param user -- объект класса {@code User}
+     * @return Результат исполнения запроса ({@code true/false})
+     */
     public boolean AddUser(User user) {
         String statement = """
                 INSERT INTO Users ("username", "name", "last_name", "password", "status_message", "phone_number", "date_registered")
@@ -62,6 +67,21 @@ public class UserDatabaseWorker {
             return stmt.execute();
         } catch (Exception e) {
             System.err.println("Cannot comply the statement at AddUser, an error has occured:");
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public boolean UserExists(String username) {
+        String statement = "SELECT * FROM Users WHERE username = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+            stmt.setString(1, username);
+            ResultSet result = stmt.executeQuery();
+            if (result.next()) return true;
+            return false;
+        } catch (SQLException e) {
+            System.err.println("An error has occured in UserExists:");
             e.printStackTrace();
             return false;
         }

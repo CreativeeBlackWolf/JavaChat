@@ -34,7 +34,7 @@ public class Main {
                 System.out.print("Введите номер телефона: ");
                 user.number.setNumber(input.nextLine());
                 UserDatabaseWorker worker = new UserDatabaseWorker();
-                System.out.println(worker.AddUser(user));
+                System.out.println(worker.UserExists(user.getUsername()));
                 System.out.println(user.number.ConvertToStandard());
                 System.out.println(user.getName());
                 System.out.println(user.getLastName());
