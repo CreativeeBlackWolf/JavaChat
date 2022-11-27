@@ -1,4 +1,4 @@
-package chat.Client;
+package chat.Shared.Utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,10 +10,14 @@ public class User {
     private String lastName;
     private String statusMessage;
     private String password;
+    private String username;
+    
+
     public Number number;
 
 
-    public User(String name, String lastName, String statusMessage, String password, Number number) throws InvalidNameException, InvalidPasswordException{
+    public User(String username,String name, String lastName, String statusMessage, String password, Number number) throws InvalidNameException, InvalidPasswordException{
+        this.username = username;
         this.password = setPassword(password);
         this.number = number;
         this.name = setName(name);
@@ -64,6 +68,10 @@ public class User {
         return password;
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public String getName() {
         return name;
     }
@@ -80,4 +88,7 @@ public class User {
         return password;
     }
 
+    public String getUsername() {
+        return username;
+    }
 }

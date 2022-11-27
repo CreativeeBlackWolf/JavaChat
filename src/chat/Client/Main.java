@@ -1,14 +1,14 @@
 package chat.Client;
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.io.InvalidObjectException;
-import java.sql.SQLException;
 import java.util.Scanner;
 
-import chat.Shared.Database.DatabaseWorker;
+import chat.Shared.Database.UserDatabaseWorker;
 import chat.Shared.Exceptions.InvalidNameException;
 import chat.Shared.Exceptions.InvalidNumberException;
 import chat.Shared.Exceptions.InvalidPasswordException;
+import chat.Shared.Utils.Number;
+import chat.Shared.Utils.User;
 
 
 public class Main {
@@ -17,35 +17,24 @@ public class Main {
         Number number = new Number();
         User user;
         try {
-            user = new User("Jason",
+            user = new User("not saqriphnix",
+                            "Jason",
                             "Voorheese",
                             "69",
                             "Test1test",
                             number);
         } catch (InvalidNameException | InvalidPasswordException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
             input.close();
             throw new InvalidObjectException("Объект пользователя инициализирован неверно."); 
         }
-        
-        DatabaseWorker worker = new DatabaseWorker();
-
-        try {
-            worker.Connect("./users.db");
-            System.out.println(worker.TableExists("Users"));
-        } catch (SQLException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-            input.close();
-            throw new InterruptedIOException();
-        }
-
 
         while (user.number.getNumber() == null) {
             try {
                 System.out.print("Введите номер телефона: ");
                 user.number.setNumber(input.nextLine());
+                UserDatabaseWorker worker = new UserDatabaseWorker();
+                System.out.println(worker.AddUser(user));
                 System.out.println(user.number.ConvertToStandard());
                 System.out.println(user.getName());
                 System.out.println(user.getLastName());
