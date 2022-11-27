@@ -36,7 +36,6 @@ public class DatabaseWorker {
         return result.next();
     }
 
-
     public boolean Close() throws SQLException {
         connection.close();
 
