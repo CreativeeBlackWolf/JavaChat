@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Base64;
 
 public class PasswordHash {
     public PasswordHash(){
@@ -24,8 +25,6 @@ public class PasswordHash {
 
             byte[] hash = digester.digest();
 
-            BigInteger hashInt = new BigInteger(1,hash);
-
-        return hashInt.toString(16);
+        return Base64.getEncoder().encodeToString(hash);
     }
 }
