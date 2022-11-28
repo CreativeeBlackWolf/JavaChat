@@ -1,14 +1,21 @@
 package chat.Client;
 import java.io.IOException;
 import java.io.InvalidObjectException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
 import chat.Shared.Database.UserDatabaseWorker;
+import chat.Shared.Encryption.MessageEncryption;
 import chat.Shared.Exceptions.InvalidNameException;
 import chat.Shared.Exceptions.InvalidNumberException;
 import chat.Shared.Exceptions.InvalidPasswordException;
 import chat.Shared.Utils.Number;
 import chat.Shared.Utils.User;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 
 public class Main {
@@ -40,8 +47,14 @@ public class Main {
                 System.out.println(user.getLastName());
                 System.out.println(user.getPassword());
                 System.out.println(user.getStatusMessage());
+                MessageEncryption messageEncryption = new MessageEncryption();
+                String msg = "PlaintText";
+                String encryptMsg = messageEncryption.encrypt(msg);
+                System.out.println("Зашифрованное сообщение: " + encryptMsg);
+                System.out.println("Расшифрованное сообщение: " + messageEncryption.decrypt(encryptMsg));
             }
-            catch (InvalidNumberException e) {
+            catch (InvalidNumberException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException |
+                   BadPaddingException | NoSuchAlgorithmException e) {
                 System.out.println(e);
             }
         }
