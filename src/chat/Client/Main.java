@@ -1,14 +1,14 @@
 package chat.Client;
-
 import java.io.IOException;
 import java.io.InvalidObjectException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
-import chat.Shared.Ecryption.PasswordHash;
+import chat.Shared.Database.UserDatabaseWorker;
 import chat.Shared.Exceptions.InvalidNameException;
 import chat.Shared.Exceptions.InvalidNumberException;
 import chat.Shared.Exceptions.InvalidPasswordException;
+import chat.Shared.Utils.Number;
+import chat.Shared.Utils.User;
 
 
 public class Main {
@@ -17,22 +17,24 @@ public class Main {
         Number number = new Number();
         User user;
         try {
-            user = new User("Jason",
+            user = new User("not saqriphnix",
+                            "Jason",
                             "Voorheese",
                             "69",
                             "Test1test",
                             number);
         } catch (InvalidNameException | InvalidPasswordException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
             input.close();
             throw new InvalidObjectException("Объект пользователя инициализирован неверно."); 
         }
-        
+
         while (user.number.getNumber() == null) {
             try {
                 System.out.print("Введите номер телефона: ");
                 user.number.setNumber(input.nextLine());
+                UserDatabaseWorker worker = new UserDatabaseWorker();
+                System.out.println(worker.UserExists(user.getUsername()));
                 System.out.println(user.number.ConvertToStandard());
                 System.out.println(user.getName());
                 System.out.println(user.getLastName());
@@ -45,11 +47,5 @@ public class Main {
         }
 
         input.close();
-
-        try {
-            System.out.println(PasswordHash.getPasswordHash(user.getPassword()));
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
