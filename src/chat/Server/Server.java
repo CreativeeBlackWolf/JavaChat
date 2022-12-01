@@ -19,13 +19,17 @@ public class Server {
             e.printStackTrace();
         }
         Map<String, ClientHandler> clients = new ConcurrentHashMap<>();
-        // TODO auth
+        Authenticator auth = new Authenticator();
 
-        
+        new Thread(new ServerConsole(clients)).start();
+
+        System.out.println("Server online!111");
 
         while (chatServer != null) {
             try {
                 Socket clientSocket = chatServer.accept();
+                ClientHandlerRunnable handlerInit = new ClientHandlerRunnable(clientSocket, clients, auth);
+                new Thread(handlerInit).start();
             } catch (IOException e) {
                 e.printStackTrace();
             }

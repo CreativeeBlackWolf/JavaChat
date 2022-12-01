@@ -8,17 +8,18 @@ public class ClientHandlerRunnable implements Runnable {
 
     private final Socket clientSocket;
     private final Map<String, ClientHandler> clients;
+    private final Authenticator auth;
 
-    public ClientHandlerRunnable(Socket clientSocket, Map<String, ClientHandler> clients) {
+    public ClientHandlerRunnable(Socket clientSocket, Map<String, ClientHandler> clients, Authenticator auth) {
         this.clientSocket = clientSocket;
         this.clients = clients;
-        // TODO authencation
+        this.auth = auth;
     }
 
     @Override
     public void run() {
         try {
-            ClientHandler newClient = new ClientHandler(clientSocket, clients);
+            ClientHandler newClient = new ClientHandler(clientSocket, clients, auth);
             clients.put(newClient.username, newClient);
             newClient.StartListening();
         } catch (IOException e) {

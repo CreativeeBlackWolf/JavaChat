@@ -5,5 +5,6 @@ public enum AuthencationResponce {
     ALREADY_LOGGED_IN,
     REGISTERED,
     INVALID_USERNAME,
-    INVALID_PASSWORD
+    INVALID_PASSWORD,
+    REGISTER_PROCESS
 }

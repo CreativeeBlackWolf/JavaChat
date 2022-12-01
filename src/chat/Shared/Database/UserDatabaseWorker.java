@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import chat.Shared.DatabaseFields;
 import chat.Shared.Utils.User;
 
 public class UserDatabaseWorker {
@@ -32,7 +33,7 @@ public class UserDatabaseWorker {
             String statement = """
                 CREATE TABLE "Users" (
                     "user_id"	INTEGER,
-                    "username"	TEXT NOT NULL,
+                    "username"	TEXT NOT NULL UNIQUE,
                     "name"	TEXT NOT NULL,
                     "last_name"	TEXT NOT NULL,
                     "password"	TEXT NOT NULL,
@@ -84,6 +85,19 @@ public class UserDatabaseWorker {
             System.err.println("An error has occured in UserExists:");
             e.printStackTrace();
             return false;
+        }
+    }
+
+    public String GetParam(DatabaseFields field, String username) {
+        String statement = "SELECT "+ field.name() +" FROM Users WHERE username = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+            stmt.setString(1, username);
+            ResultSet result = stmt.executeQuery();
+            return result.getString(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "";
         }
     }
 }

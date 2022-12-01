@@ -30,6 +30,10 @@ public class User {
         this.statusMessage = setStatusMessage(statusMessage);
     }
 
+    public User() {
+        
+    }
+
     public String setName(String name) throws InvalidNameException {
         if (name.isBlank() || name.contains(" ") || name.length() > 16) {
             throw new InvalidNameException("Имя не должно быть пустым, не должно содержать пробелов и быть длиннее 16 символов.");
