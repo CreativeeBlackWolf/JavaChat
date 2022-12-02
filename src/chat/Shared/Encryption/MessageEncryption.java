@@ -57,10 +57,6 @@ public class MessageEncryption {
         }
     }
 
-    public PrivateKey getPrivateKey(){
-        return privateKey;
-    }
-
     public PublicKey getPublicKey(){
         return publicKey;
     }
