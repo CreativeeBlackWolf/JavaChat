@@ -47,13 +47,11 @@ public class Main {
             }
         }
 
-        MessageEncryption messageEncryption = new MessageEncryption();
-        String msg = "PlaintText";
-        String encryptMsg = messageEncryption.encrypt(msg);
-        System.out.println("Зашифрованное сообщение: " + encryptMsg);
-        System.out.println("Расшифрованное сообщение: " + messageEncryption.decrypt(encryptMsg));
-        System.out.println("\n" + messageEncryption.getPrivateKey());
-        System.out.println(messageEncryption.getPublicKey());
+        MessageEncryption User1 = new MessageEncryption();
+        MessageEncryption User2 = new MessageEncryption();
+        String encryptMsg = User1.encrypt("Plain Text", User2.getPublicKey());
+        System.out.println("Зашифрованное сообщение User-ом 1: " + encryptMsg);
+        System.out.println("Расшифрованное сообщение User-ом 2: " + User2.decrypt(encryptMsg));
 
         input.close();
     }

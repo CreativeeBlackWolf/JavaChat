@@ -26,7 +26,7 @@ public class MessageEncryption {
         }
     }
 
-    public String encrypt(String message) {
+    public String encrypt(String message, PublicKey publicKey) {
         try{
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
