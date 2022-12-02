@@ -11,21 +11,32 @@ public class PasswordHash {
 
     }
 
-    public static String getPasswordHash(String password) throws NoSuchAlgorithmException {
+    public static byte[] generateSalt(){
+        byte[] generatedSalt = new byte[16];
+        try {
+            SecureRandom.getInstanceStrong().nextBytes(generatedSalt);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        return generatedSalt;
+    }
 
+    public static String getPasswordHash(String password, byte[] salt) {
+        try{
             MessageDigest digester = MessageDigest.getInstance("SHA-512");
 
             byte[] passwordBytes = password.getBytes(StandardCharsets.UTF_8);
-            byte[] salt = new byte[16];
 
-            SecureRandom.getInstanceStrong().nextBytes(salt);
             digester.update(salt);
             digester.update(passwordBytes);
 
             byte[] hash = digester.digest();
-
             BigInteger hashInt = new BigInteger(1,hash);
 
-        return hashInt.toString(16);
+            return hashInt.toString(16);
+
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
