@@ -8,25 +8,37 @@ import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.Base64;
 
-public class MessageEncryption {
+public class RSA {
     private PrivateKey privateKey;
     private PublicKey publicKey;
 
-    public MessageEncryption(){
-        try{
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            keyPairGenerator.initialize(1024);
-            KeyPair keypair = keyPairGenerator.generateKeyPair();
-
-            privateKey = keypair.getPrivate();
-            publicKey = keypair.getPublic();
-
-        } catch(NoSuchAlgorithmException e){
+    public RSA() {
+        try {
+            generateKeyPair(1024);
+        } catch(NoSuchAlgorithmException e) {
             e.getMessage();
         }
     }
 
-    public String encrypt(String message, PublicKey publicKey) {
+    public RSA(PublicKey publicKey, PrivateKey privateKey) {
+        this.publicKey = publicKey;
+        this.privateKey = privateKey;
+    }
+
+    /** Генерирует и моментально применяет новые ключи шифрования
+     * @param keysize -- размер ключа (должен быть степенью двойки)
+     * @throws NoSuchAlgorithmException
+     */
+    public void generateKeyPair(int keysize) throws NoSuchAlgorithmException {
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(1024);
+        KeyPair keypair = keyPairGenerator.generateKeyPair();
+
+        this.privateKey = keypair.getPrivate();
+        this.publicKey = keypair.getPublic();
+    }
+
+    public String encrypt(String message) {
         try{
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
@@ -59,5 +71,17 @@ public class MessageEncryption {
 
     public PublicKey getPublicKey(){
         return publicKey;
+    }
+    
+    public void setPublicKey(PublicKey publicKey) {
+        this.publicKey = publicKey;
+    }
+
+    public PrivateKey getPrivateKey() {
+        return privateKey;
+    }
+
+    public void setPrivateKey(PrivateKey privateKey) {
+        this.privateKey = privateKey;
     }
 }

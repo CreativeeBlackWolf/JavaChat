@@ -4,7 +4,7 @@ import java.io.InvalidObjectException;
 import java.util.Scanner;
 
 import chat.Shared.Database.UserDatabaseWorker;
-import chat.Shared.Encryption.MessageEncryption;
+import chat.Shared.Encryption.RSA;
 import chat.Shared.Exceptions.InvalidNameException;
 import chat.Shared.Exceptions.InvalidNumberException;
 import chat.Shared.Exceptions.InvalidPasswordException;
@@ -30,28 +30,30 @@ public class Main {
             throw new InvalidObjectException("Объект пользователя инициализирован неверно."); 
         }
 
-        while (user.number.getNumber() == null) {
-            try {
-                System.out.print("Введите номер телефона: ");
-                user.number.setNumber(input.nextLine());
-                UserDatabaseWorker worker = new UserDatabaseWorker();
-                System.out.println(worker.UserExists(user.getUsername()));
-                System.out.println(user.number.ConvertToStandard());
-                System.out.println(user.getName());
-                System.out.println(user.getLastName());
-                System.out.println(user.getPassword());
-                System.out.println(user.getStatusMessage());
-            }
-            catch (InvalidNumberException e) {
-                System.out.println(e);
-            }
-        }
+        // while (user.number.getNumber() == null) {
+        //     try {
+        //         System.out.print("Введите номер телефона: ");
+        //         user.number.setNumber(input.nextLine());
+        //         UserDatabaseWorker worker = new UserDatabaseWorker();
+        //         System.out.println(worker.UserExists(user.getUsername()));
+        //         System.out.println(user.number.ConvertToStandard());
+        //         System.out.println(user.getName());
+        //         System.out.println(user.getLastName());
+        //         System.out.println(user.getPassword());
+        //         System.out.println(user.getStatusMessage());
+        //     }
+        //     catch (InvalidNumberException e) {
+        //         System.out.println(e);
+        //     }
+        // }
 
-        MessageEncryption User1 = new MessageEncryption();
-        MessageEncryption User2 = new MessageEncryption();
-        String encryptMsg = User1.encrypt("Plain Text", User2.getPublicKey());
-        System.out.println("Зашифрованное сообщение User-ом 1: " + encryptMsg);
-        System.out.println("Расшифрованное сообщение User-ом 2: " + User2.decrypt(encryptMsg));
+        RSA server = new RSA();
+        RSA client = new RSA(server.getPublicKey(), server.getPrivateKey());
+
+        String messageToEncrypt = server.encrypt("fuck me");
+        System.out.println(messageToEncrypt);
+        String messageToDecrypt = client.decrypt(messageToEncrypt);
+        System.out.println(messageToDecrypt);
 
         input.close();
     }
