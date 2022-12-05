@@ -14,7 +14,7 @@ import chat.Shared.Utils.Number;
 import chat.Shared.Utils.User;
 
 
-public class Main {
+public class Client {
     public static void main(String[] args) throws IOException {
         User user = new User();
         Socket clientSocket = new Socket("localhost", 2727);
