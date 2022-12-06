@@ -59,7 +59,7 @@ public class User {
     }
 
     public String setPassword(String password) throws InvalidPasswordException {
-        String regex = "(?=^.{8,32}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$";
+        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
         Pattern p = Pattern.compile(regex);
 
         if (password.isBlank()) {
