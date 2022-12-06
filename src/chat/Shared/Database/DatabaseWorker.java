@@ -14,10 +14,10 @@ public class DatabaseWorker {
     
 
     public DatabaseWorker(String dbPath) throws SQLException, ConnectionNotClosedException {
-        Connect(dbPath);
+        connect(dbPath);
     }
 
-    public boolean Connect(String dbPath) throws SQLException, ConnectionNotClosedException {
+    public boolean connect(String dbPath) throws SQLException, ConnectionNotClosedException {
         if (connection != null) {
             if (!(connection.isClosed())) {
                 throw new ConnectionNotClosedException("Already connected to database.");
@@ -29,14 +29,14 @@ public class DatabaseWorker {
         return connection.isValid(0);
     }
 
-    public boolean TableExists(String tableName) throws SQLException {
+    public boolean tableExists(String tableName) throws SQLException {
         DatabaseMetaData meta = connection.getMetaData();
         ResultSet result = meta.getTables(null, null, tableName, new String[] {"TABLE"});
         
         return result.next();
     }
 
-    public boolean Close() throws SQLException {
+    public boolean close() throws SQLException {
         connection.close();
 
         return connection.isClosed();

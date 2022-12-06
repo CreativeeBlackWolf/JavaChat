@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.security.PublicKey;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -12,8 +13,11 @@ import chat.Shared.AuthencationResponce;
 import chat.Shared.Exceptions.InvalidNameException;
 import chat.Shared.Exceptions.InvalidNumberException;
 import chat.Shared.Exceptions.InvalidPasswordException;
-import chat.Shared.Utils.User;
+import chat.Shared.Security.DH;
+import chat.Shared.Security.RSA;
+import chat.Shared.Utils.KeyConverter;
 import chat.Shared.Utils.Number;
+import chat.Shared.Utils.User;
 
 public class ClientHandler {
     private static final Pattern NICKNAME_RULES = Pattern.compile("\\w+");
@@ -24,126 +28,144 @@ public class ClientHandler {
     private final Authenticator auth;
     protected final Socket clientSocket;
     private final Map<String, ClientHandler> clients;
+    private final RSA security;
+    private static final DH hell = new DH();
 
 
-    public ClientHandler(Socket clientSocket, Map<String, ClientHandler> clients, Authenticator auth) throws IOException {
+    public ClientHandler(Socket clientSocket, Map<String, ClientHandler> clients, Authenticator auth, RSA security) throws IOException {
         this.socketWriter = new PrintWriter(clientSocket.getOutputStream());
         this.socketReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         this.clients = clients;
         this.clientSocket = clientSocket;
         this.auth = auth;
+        this.security = security;
 
-        this.username = AuthenticateUser();
+        exchangeKeys();
+        this.username = authenticateUser();
     }
 
-    public void StartListening() {
-        Broadcast("SERVER: " + username + " has joined chatroom!");
+    public void startListening() {
+        broadcast("SERVER: " + username + " has joined chatroom!");
         try {
             while (true) {
                 String clientData = socketReader.readLine();
                 if (clientData == null) {
-                    Disconnect();
+                    disconnect();
                     break;
                 }
 
-                // TODO should be decrypted
-                String message = clientData;
+                String message = security.decrypt(clientData);
                 
                 if (message.startsWith(":clients")) {
-                    SendClientsList();
+                    sendClientsList();
                 }
                 else {
-                    Broadcast(username + ": " + message);
+                    broadcast(username + ": " + message);
                 }
             }
         } catch (Exception e) {
-            Disconnect();
+            disconnect();
         }
     }
 
-    private String AuthenticateUser() throws IOException {
+    private String authenticateUser() throws IOException {
         while (true) {
             String encryptedUsername = socketReader.readLine();
-            // String decryptedUsername = decryptor.decryptString(encryptedUsername);
+            String decryptedUsername = security.decrypt(encryptedUsername);
             String encryptedPassword = socketReader.readLine();
-            // String decryptedPassword = decryptor.decryptString(encryptedPassword);
-            if (NICKNAME_RULES.matcher(encryptedUsername).matches()) {
-                // TODO replace to decryptedUsername when decryptor is ready
-                if (!clients.containsKey(encryptedUsername)) {
-                    if (auth.IsUserRegistered(encryptedUsername)) {
-                        if (auth.Authenticate(encryptedPassword, encryptedUsername)) {
-                            Send(AuthencationResponce.LOGIN_SUCCESS.name());
-                            return encryptedUsername;
+            String decryptedPassword = security.decrypt(encryptedPassword);
+            if (NICKNAME_RULES.matcher(decryptedUsername).matches()) {
+                if (!clients.containsKey(decryptedUsername)) {
+                    if (auth.isUserRegistered(decryptedUsername)) {
+                        if (auth.authenticate(decryptedPassword, decryptedUsername)) {
+                            sendEncrypted(AuthencationResponce.LOGIN_SUCCESS.name());
+                            return decryptedUsername;
                         }
                         else {
-                            Send(AuthencationResponce.INVALID_PASSWORD.name());
+                            sendEncrypted(AuthencationResponce.INVALID_PASSWORD.name());
                         }
                     }
                     else {
-                        Send(AuthencationResponce.REGISTER_PROCESS.name());
-                        String name = socketReader.readLine();
-                        String lastName = socketReader.readLine();
+                        sendEncrypted(AuthencationResponce.REGISTER_PROCESS.name());
+                        String encryptedName = socketReader.readLine();
+                        String encryptedLastName = socketReader.readLine();
+                        String name = security.decrypt(encryptedName);
+                        String lastName = security.decrypt(encryptedLastName);
                         
                         try {
-                            Number number = new Number(socketReader.readLine());
-                            // TODO replace to decrypted
-                            User user = new User(encryptedUsername, 
+                            String encryptedNumber = socketReader.readLine();
+                            Number number = new Number(security.decrypt(encryptedNumber));
+                            User user = new User(decryptedUsername, 
                                                 name, 
                                                 lastName, 
                                                 "Ayo, i'm new there!", 
-                                                encryptedPassword, 
+                                                decryptedPassword, 
                                                 number);
-                            auth.RegisterUser(user);
-                            Send(AuthencationResponce.REGISTERED.name());
-                            return encryptedUsername;
+                            auth.registerUser(user);
+                            sendEncrypted(AuthencationResponce.REGISTERED.name());
+                            return decryptedUsername;
                         } catch (InvalidNameException 
                                 | InvalidPasswordException 
                                 | IOException
                                 | InvalidNumberException e) {
                             e.printStackTrace();
-                            Send("OOPS: server just got an exception! Please try again or contact developers.");
+                            sendEncrypted("OOPS: server just got an exception! Please try again or contact developers.");
                         }
                     }
                 }
                 else {
-                    Send(AuthencationResponce.ALREADY_LOGGED_IN.name());
+                    sendEncrypted(AuthencationResponce.ALREADY_LOGGED_IN.name());
                 }
             }
             else {
-                // TODO send encrypted
-                Send(AuthencationResponce.INVALID_USERNAME.name());
+                sendEncrypted(AuthencationResponce.INVALID_USERNAME.name());
             }
         }
     }
 
-    private void SendClientsList() {
+    private void sendClientsList() {
         String message = "";
         for (String username : clients.keySet()) {
             message += "\t" + username;
         }
-        Send(message);
+        sendEncrypted(message);
     }
 
-    private void Disconnect() {
+    private void disconnect() {
         clients.remove(username);
-        Broadcast(username + " has disconnected.");
+        broadcast(username + " has disconnected.");
     }
 
-    private void Broadcast(String message) {
+    private void broadcast(String message) {
         for (ClientHandler clientHandler : clients.values()) {
             if (clientHandler != this) {
-                // TODO send encrypted
-                clientHandler.Send(message);
+                clientHandler.sendEncrypted(message);
             }
         }
     }
 
-    protected void Send(String data) {
+    private void send(String data) {
         try {
             socketWriter.println(data);
             socketWriter.flush();
         } catch (Exception e) {
-            Disconnect();
+            disconnect();
         }
+    }
+
+    protected void sendEncrypted(String data) {
+        try {
+            socketWriter.println(security.encrypt(data));
+            socketWriter.flush();
+        } catch (Exception e) {
+            disconnect();
+        }
+    }
+
+    private void exchangeKeys() throws IOException {
+        send(KeyConverter.keyToString(hell.getPublickey()));
+        hell.setReceiverPublicKey((PublicKey) KeyConverter.stringToKey(socketReader.readLine(), "EC", false));
+        send(hell.encrypt(KeyConverter.keyToString(security.getPublicKey())));
+        send(hell.encrypt(KeyConverter.keyToString(security.getPrivateKey())));
     }
 }

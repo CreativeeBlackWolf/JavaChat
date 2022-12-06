@@ -3,6 +3,9 @@ package chat.Server;
 import java.net.Socket;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import chat.Shared.Security.RSA;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 
@@ -22,13 +25,14 @@ public class Server {
         Authenticator auth = new Authenticator();
 
         new Thread(new ServerConsole(clients)).start();
+        RSA security = new RSA();
 
         System.out.println("Server online!111");
 
         while (chatServer != null) {
             try {
                 Socket clientSocket = chatServer.accept();
-                ClientHandlerRunnable handlerInit = new ClientHandlerRunnable(clientSocket, clients, auth);
+                ClientHandlerRunnable handlerInit = new ClientHandlerRunnable(clientSocket, clients, auth, security);
                 new Thread(handlerInit).start();
             } catch (IOException e) {
                 e.printStackTrace();

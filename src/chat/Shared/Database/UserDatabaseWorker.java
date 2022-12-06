@@ -18,16 +18,16 @@ public class UserDatabaseWorker {
             worker = new DatabaseWorker("./users.db");
             connection = worker.getConnection();
 
-            InitializeUsersDatabase();
+            initializeUsersDatabase();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     
-    public void InitializeUsersDatabase() {
+    public void initializeUsersDatabase() {
         try (Statement stmt = connection.createStatement()) {
-            if (worker.TableExists("Users")) {
+            if (worker.tableExists("Users")) {
                 return;
             }
             String statement = """
@@ -52,7 +52,7 @@ public class UserDatabaseWorker {
      * @param user -- объект класса {@code User}
      * @return Результат исполнения запроса ({@code true/false})
      */
-    public boolean AddUser(User user) {
+    public boolean addUser(User user) {
         String statement = """
                 INSERT INTO Users ("username", "name", "last_name", "password", "status_message", "phone_number", "date_registered")
                 VALUES (?, ?, ?, ?, ?, ?, datetime("now", "localtime"));
@@ -63,7 +63,7 @@ public class UserDatabaseWorker {
             stmt.setString(3, user.getLastName());
             stmt.setString(4, user.getPassword());
             stmt.setString(5, user.getStatusMessage());
-            stmt.setString(6, user.number.ConvertToStandard());
+            stmt.setString(6, user.number.convertToStandard());
 
             return stmt.execute();
         } catch (Exception e) {
@@ -73,7 +73,7 @@ public class UserDatabaseWorker {
         }
     }
     
-    public boolean UserExists(String username) {
+    public boolean userExists(String username) {
         String statement = "SELECT * FROM Users WHERE username = ?";
         
         try (PreparedStatement stmt = connection.prepareStatement(statement)) {
@@ -88,8 +88,8 @@ public class UserDatabaseWorker {
         }
     }
 
-    public String GetParam(DatabaseFields field, String username) {
-        String statement = "SELECT "+ field.name() +" FROM Users WHERE username = ?";
+    public String getParam(DatabaseFields field, String username) {
+        String statement = "SELECT " + field.name() + " FROM Users WHERE username = ?";
         
         try (PreparedStatement stmt = connection.prepareStatement(statement)) {
             stmt.setString(1, username);
@@ -97,7 +97,7 @@ public class UserDatabaseWorker {
             return result.getString(1);
         } catch (SQLException e) {
             e.printStackTrace();
-            return "";
+            return null;
         }
     }
 }

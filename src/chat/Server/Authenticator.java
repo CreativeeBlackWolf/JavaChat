@@ -12,17 +12,17 @@ public class Authenticator {
         db = new UserDatabaseWorker();
     }
 
-    public boolean Authenticate(String decryptedPassword, String username) {
-        String password = db.GetParam(DatabaseFields.password, username);
+    public boolean authenticate(String decryptedPassword, String username) {
+        String password = db.getParam(DatabaseFields.password, username);
         return password.equals(decryptedPassword);
     }
 
-    public void RegisterUser(User user) {
-        db.AddUser(user);
+    public void registerUser(User user) {
+        db.addUser(user);
     }
 
-    public boolean IsUserRegistered(String username) {
-        return db.UserExists(username);
+    public boolean isUserRegistered(String username) {
+        return db.userExists(username);
     }
 
 }

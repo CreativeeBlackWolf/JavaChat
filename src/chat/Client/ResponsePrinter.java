@@ -5,12 +5,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import chat.Shared.Security.RSA;
+
 public class ResponsePrinter implements Runnable {
     private BufferedReader socketReader;
+    private RSA security;
     
-    public ResponsePrinter(Socket input) throws IOException {
+    public ResponsePrinter(Socket input, RSA security) throws IOException {
         this.socketReader = new BufferedReader(new InputStreamReader(input.getInputStream()));
-        // TODO decryptor there
+        this.security = security;
+    }
+
+    public ResponsePrinter(Socket input) throws IOException {
+        this.socketReader = new BufferedReader(new InputStreamReader(input.getInputStream())); 
     }
 
     @Override
@@ -19,10 +26,11 @@ public class ResponsePrinter implements Runnable {
             while (true) {
                 String line = socketReader.readLine();
                 if (line != null) {
-                    System.out.println(line);
+                    System.out.println(security.decrypt(line));
                 }
                 else {
                     System.err.println("Server disconnected :(");
+                    // sys.exit необходим, так как в случае break'a главный поток останется работать.
                     System.exit(0);
                 }
             }

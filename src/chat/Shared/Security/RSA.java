@@ -1,4 +1,4 @@
-package chat.Shared.Encryption;
+package chat.Shared.Security;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -26,7 +26,7 @@ public class RSA {
     }
 
     /** Генерирует и моментально применяет новые ключи шифрования
-     * @param keysize -- размер ключа (должен быть степенью двойки)
+     * @param keysize -- размер ключа
      * @throws NoSuchAlgorithmException
      */
     public void generateKeyPair(int keysize) throws NoSuchAlgorithmException {

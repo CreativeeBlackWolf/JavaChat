@@ -54,7 +54,7 @@ public class ServerConsole implements Runnable {
 
     private void Broadcast(String message) {
         for (ClientHandler clientHandler : clients.values()) {
-            clientHandler.Send("SERVER: " + message);
+            clientHandler.sendEncrypted("SERVER: " + message);
         }
     }
 }
