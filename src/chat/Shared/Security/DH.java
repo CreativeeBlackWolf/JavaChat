@@ -61,7 +61,6 @@ public class DH {
             Key key = generateKey();
             Cipher c = Cipher.getInstance(ALGO);
             c.init(Cipher.DECRYPT_MODE, key);
-            // byte[] decordedValue = new BASE64Decoder().decodeBuffer(encryptedData);
             Decoder decoder = Base64.getDecoder();
             byte[] decordedValue = decoder.decode(encryptedData);
             byte[] decValue = c.doFinal(decordedValue);
