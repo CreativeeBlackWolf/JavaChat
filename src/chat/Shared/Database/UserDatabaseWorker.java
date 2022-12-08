@@ -67,7 +67,7 @@ public class UserDatabaseWorker {
 
             return stmt.execute();
         } catch (Exception e) {
-            System.err.println("Cannot comply the statement at AddUser, an error has occured:");
+            System.err.println("Cannot comply the statement at addUser, an error has occured:");
             e.printStackTrace();
             return false;
         }
@@ -82,7 +82,7 @@ public class UserDatabaseWorker {
             if (result.next()) return true;
             return false;
         } catch (SQLException e) {
-            System.err.println("An error has occured in UserExists:");
+            System.err.println("An error has occured in userExists:");
             e.printStackTrace();
             return false;
         }
@@ -95,6 +95,30 @@ public class UserDatabaseWorker {
             stmt.setString(1, username);
             ResultSet result = stmt.executeQuery();
             return result.getString(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String checkUnique(String number) {
+        // String statement = "SELECT * FROM Users WHERE username = ?";
+
+        // try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+        //     stmt.setString(1, username);
+        //     ResultSet result = stmt.executeQuery();
+        //     if (result.next()) return "USERNAME_EXISTS";
+        // } catch (SQLException e) {
+        //     e.printStackTrace();
+        //     return null;
+        // }
+        String statement;
+        statement = "SELECT * FROM Users WHERE phone_number = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+            stmt.setString(1, number);
+            ResultSet result = stmt.executeQuery();
+            if (result.next()) return "PHONE_NUMBER_EXISTS";
+            return "CHECK_SUCCESSFULL";
         } catch (SQLException e) {
             e.printStackTrace();
             return null;

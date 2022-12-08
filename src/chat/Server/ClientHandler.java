@@ -9,7 +9,7 @@ import java.security.PublicKey;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import chat.Shared.AuthencationResponce;
+import chat.Shared.AuthencationResponse;
 import chat.Shared.Exceptions.InvalidNameException;
 import chat.Shared.Exceptions.InvalidNumberException;
 import chat.Shared.Exceptions.InvalidPasswordException;
@@ -20,9 +20,14 @@ import chat.Shared.Utils.Number;
 import chat.Shared.Utils.User;
 
 public class ClientHandler {
-    private static final Pattern NICKNAME_RULES = Pattern.compile("\\w+");
+    // Никнейм должен быть:
+    // от 6 до 27 символов в длину
+    // не должен иметь "." или "_" как первый или последний символ
+    // не должен содержать "__", "..", "._", "_."
+    // не должен содержать иные символы, кроме латинского алфавита, чисел и "." "_"
+    private static final Pattern NICKNAME_RULES = Pattern.compile("^(?=.{6,27}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$");
 
-    protected final String username;
+    protected String username;
     private final PrintWriter socketWriter;
     private final BufferedReader socketReader;
     private final Authenticator auth;
@@ -41,7 +46,7 @@ public class ClientHandler {
         this.security = security;
 
         exchangeKeys();
-        this.username = authenticateUser();
+        do { this.username = authenticateUser(); } while (username == null);
     }
 
     public void startListening() {
@@ -78,15 +83,15 @@ public class ClientHandler {
                 if (!clients.containsKey(decryptedUsername)) {
                     if (auth.isUserRegistered(decryptedUsername)) {
                         if (auth.authenticate(decryptedPassword, decryptedUsername)) {
-                            sendEncrypted(AuthencationResponce.LOGIN_SUCCESS.name());
+                            sendEncrypted(AuthencationResponse.LOGIN_SUCCESS.name());
                             return decryptedUsername;
                         }
                         else {
-                            sendEncrypted(AuthencationResponce.INVALID_PASSWORD.name());
+                            sendEncrypted(AuthencationResponse.INVALID_PASSWORD.name());
                         }
                     }
                     else {
-                        sendEncrypted(AuthencationResponce.REGISTER_PROCESS.name());
+                        sendEncrypted(AuthencationResponse.REGISTER_PROCESS.name());
                         String encryptedName = socketReader.readLine();
                         String encryptedLastName = socketReader.readLine();
                         String name = security.decrypt(encryptedName);
@@ -95,6 +100,12 @@ public class ClientHandler {
                         try {
                             String encryptedNumber = socketReader.readLine();
                             Number number = new Number(security.decrypt(encryptedNumber));
+                            String check = auth.checkUnique(number.convertToStandard());
+                            if (!check.equals("CHECK_SUCCESSFULL")) {
+                                sendEncrypted(AuthencationResponse.valueOf(check).name());
+                                return null;
+                            }
+
                             User user = new User(decryptedUsername, 
                                                 name, 
                                                 lastName, 
@@ -102,7 +113,7 @@ public class ClientHandler {
                                                 decryptedPassword, 
                                                 number);
                             auth.registerUser(user);
-                            sendEncrypted(AuthencationResponce.REGISTERED.name());
+                            sendEncrypted(AuthencationResponse.REGISTERED.name());
                             return decryptedUsername;
                         } catch (InvalidNameException 
                                 | InvalidPasswordException 
@@ -114,11 +125,11 @@ public class ClientHandler {
                     }
                 }
                 else {
-                    sendEncrypted(AuthencationResponce.ALREADY_LOGGED_IN.name());
+                    sendEncrypted(AuthencationResponse.ALREADY_LOGGED_IN.name());
                 }
             }
             else {
-                sendEncrypted(AuthencationResponce.INVALID_USERNAME.name());
+                sendEncrypted(AuthencationResponse.INVALID_USERNAME.name());
             }
         }
     }
@@ -163,9 +174,10 @@ public class ClientHandler {
     }
 
     private void exchangeKeys() throws IOException {
-        send(KeyConverter.keyToString(hell.getPublickey()));
+        send(KeyConverter.keyToString(security.getPublicKey()));
+        send(security.encrypt("лъягушка", security.getPrivateKey()));
         hell.setReceiverPublicKey((PublicKey) KeyConverter.stringToKey(socketReader.readLine(), "EC", false));
-        send(hell.encrypt(KeyConverter.keyToString(security.getPublicKey())));
+        send(KeyConverter.keyToString(hell.getPublickey()));
         send(hell.encrypt(KeyConverter.keyToString(security.getPrivateKey())));
     }
 }

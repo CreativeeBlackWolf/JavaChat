@@ -39,7 +39,7 @@ public class RSA {
     }
 
     public String encrypt(String message) {
-        try{
+        try {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
 
@@ -53,19 +53,50 @@ public class RSA {
         }
     }
 
-    public String decrypt(String message) {
-        try{
+    public String encrypt(String message, Key key) {
+        try {
             Cipher cipher = Cipher.getInstance("RSA");
-            cipher.init(Cipher.DECRYPT_MODE, privateKey);
+            cipher.init(Cipher.ENCRYPT_MODE, key);
 
-            byte[] messageBytes = Base64.getDecoder().decode(message);
-            byte[] decryptedMessage = cipher.doFinal(messageBytes);
-
-            return new String(decryptedMessage, StandardCharsets.UTF_8);
+            byte[] messageBytes = message.getBytes(StandardCharsets.UTF_8);
+            byte[] encryptedMessage = cipher.doFinal(messageBytes);
+            return Base64.getEncoder().encodeToString(encryptedMessage);
 
         } catch(NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException |
                 IllegalBlockSizeException | BadPaddingException e){
             return e.getMessage();
+        }
+    }
+
+    public String decrypt(String message) {
+        try {
+            Cipher cipher = Cipher.getInstance("RSA");
+                cipher.init(Cipher.DECRYPT_MODE, privateKey);
+
+                byte[] messageBytes = Base64.getDecoder().decode(message);
+                byte[] decryptedMessage = cipher.doFinal(messageBytes);
+
+                return new String(decryptedMessage, StandardCharsets.UTF_8);
+
+        } catch(NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException |
+                    IllegalBlockSizeException | BadPaddingException e){
+                return e.getMessage();
+        }
+    }
+
+    public String decrypt(String message, Key key) {
+        try {
+            Cipher cipher = Cipher.getInstance("RSA");
+                cipher.init(Cipher.DECRYPT_MODE, key);
+
+                byte[] messageBytes = Base64.getDecoder().decode(message);
+                byte[] decryptedMessage = cipher.doFinal(messageBytes);
+
+                return new String(decryptedMessage, StandardCharsets.UTF_8);
+
+        } catch(NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException |
+                IllegalBlockSizeException | BadPaddingException e) {
+                return e.getMessage();
         }
     }
 

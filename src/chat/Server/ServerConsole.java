@@ -23,7 +23,7 @@ public class ServerConsole implements Runnable {
             try {
                 String line = consoleReader.readLine();
                 if (line != null) {
-                    ExecuteCommand(line);
+                    executeCommand(line);
                 } else {
                     break;
                 }
@@ -33,18 +33,18 @@ public class ServerConsole implements Runnable {
         }
     }
 
-    private void ExecuteCommand(String command) {
+    private void executeCommand(String command) {
         if (command.startsWith("!clients")) {
-            PrintListOfClients();
+            printListOfClients();
         } else if (command.startsWith("!broadcast")) {
-            Broadcast(command.substring("!broadcast ".length()));
+            broadcast(command.substring("!broadcast ".length()));
         } 
         else {
             System.err.println("Unknown command, type !help to see all commmands.");
         }
     }
 
-    private void PrintListOfClients() {
+    private void printListOfClients() {
         System.out.println("Users online: " + clients.size());
         System.out.println("Users list:");
         for (String username : clients.keySet()) {
@@ -52,7 +52,7 @@ public class ServerConsole implements Runnable {
         }
     }
 
-    private void Broadcast(String message) {
+    private void broadcast(String message) {
         for (ClientHandler clientHandler : clients.values()) {
             clientHandler.sendEncrypted("SERVER: " + message);
         }
