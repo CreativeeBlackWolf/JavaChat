@@ -1,4 +1,4 @@
-package chat.Client.GraphicalUserInterface;
+package chat.Client;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,7 +35,6 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener {
         sendMessageButton.setPreferredSize(new Dimension(150, 100));
         sendMessageButton.addActionListener(this);
         bottomCentralPanel.add(sendMessageButton, BorderLayout.EAST);
-
 
         messageArea = new JTextArea("Write a message...");
         messageArea.setForeground(Color.gray);

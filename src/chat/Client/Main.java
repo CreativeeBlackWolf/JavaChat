@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.util.Scanner;
 
-import chat.Client.GraphicalUserInterface.ChatMenu;
 import chat.Shared.Exceptions.InvalidNameException;
 import chat.Shared.Exceptions.InvalidPasswordException;
 import chat.Shared.Utils.Number;

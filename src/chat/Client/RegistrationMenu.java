@@ -1,4 +1,4 @@
-package chat.Client.GraphicalUserInterface;
+package chat.Client;
 
 import javax.swing.*;
 
