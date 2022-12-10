@@ -30,6 +30,10 @@ public class User {
         this.statusMessage = setStatusMessage(statusMessage);
     }
 
+    public User() {
+        
+    }
+
     public String setName(String name) throws InvalidNameException {
         if (name.isBlank() || name.contains(" ") || name.length() > 16) {
             throw new InvalidNameException("Имя не должно быть пустым, не должно содержать пробелов и быть длиннее 16 символов.");
@@ -55,7 +59,7 @@ public class User {
     }
 
     public String setPassword(String password) throws InvalidPasswordException {
-        String regex = "(?=^.{8,32}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$";
+        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
         Pattern p = Pattern.compile(regex);
 
         if (password.isBlank()) {

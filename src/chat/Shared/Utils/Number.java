@@ -30,7 +30,7 @@ public class Number {
     }
 
     // метод, приводящий номер к стандарту +7 (xxx) xxx-xx-xx
-    public String ConvertToStandard(){
+    public String convertToStandard(){
         if (number.startsWith("8")){
             number = number.replaceFirst("8", "7");
         }
