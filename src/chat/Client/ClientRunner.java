@@ -66,6 +66,7 @@ public class ClientRunner {
                  authResponse != AuthencationResponse.REGISTERED);
         
         new Thread(client.securedPrinter).start();
+
         while (true) {
             String message = client.consoleReader.readLine();
             if (!message.equals("")) {

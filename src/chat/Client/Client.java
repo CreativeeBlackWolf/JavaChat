@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+import chat.Shared.AuthencationResponse;
 import chat.Shared.UserConsoleReader;
 import chat.Shared.UserReader;
 import chat.Shared.UserSystemInReader;
@@ -58,6 +59,18 @@ public class Client {
             this.securedPrinter = new ResponsePrinter(clientSocket, security);
         } else {
             throw new ServerVerifyException("Сервер не может подтвердить свою личность. Строка: " + serverVerificationResponce);
+        }
+    }
+
+    public AuthencationResponse login(String login, String password) {
+        clientWriter.println(security.encrypt(login));
+        clientWriter.println(security.encrypt(password));
+        clientWriter.flush();
+        try {
+            return AuthencationResponse.valueOf(security.decrypt(securedPrinter.readLine()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
