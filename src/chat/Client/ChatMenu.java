@@ -12,7 +12,8 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
     private static JButton sendMessageButton;
     private static JMenuItem exit;
     private static JMenuItem changeAccount;
-    private static Client client;
+    private Client client;
+
     public ChatMenu(Client client){
         this.client = client;
         setTitle("Java Chat");
@@ -62,6 +63,19 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
         chatArea.setEditable(false);
         chatArea.setLineWrap(true);
         centerPanel.add(new JScrollPane(chatArea), BorderLayout.CENTER);
+
+        JPanel rightCentralPanel = new JPanel(new BorderLayout(10, 10));
+        rightCentralPanel.setPreferredSize(new Dimension(150,150));
+        centerPanel.add(rightCentralPanel, BorderLayout.EAST);
+        
+        JLabel onlineUsersText = new JLabel("Участники");
+        onlineUsersText.setHorizontalAlignment(JLabel.CENTER);
+        rightCentralPanel.add(onlineUsersText, BorderLayout.NORTH);
+
+        onlineUsersArea = new JTextArea();
+        onlineUsersArea.setEditable(false);
+        rightCentralPanel.add(new JScrollPane(onlineUsersArea), BorderLayout.CENTER);
+
         try {
             ResponsePrinter printer = new ResponsePrinter(client.clientSocket, client.security, chatArea);
             new Thread(printer).start();
@@ -104,19 +118,6 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
         messageArea.addFocusListener(this);
         messageArea.setLineWrap(true);
         bottomCentralPanel.add(new JScrollPane(messageArea), BorderLayout.CENTER);
-
-        JPanel rightCentralPanel = new JPanel(new BorderLayout(10, 10));
-        rightCentralPanel.setPreferredSize(new Dimension(150,150));
-        centerPanel.add(rightCentralPanel, BorderLayout.EAST);
-
-        JLabel onlineUsersText = new JLabel("Участники");
-        onlineUsersText.setHorizontalAlignment(JLabel.CENTER);
-        rightCentralPanel.add(onlineUsersText, BorderLayout.NORTH);
-
-        onlineUsersArea = new JTextArea();
-        onlineUsersArea.setEditable(false);
-        rightCentralPanel.add(new JScrollPane(onlineUsersArea), BorderLayout.CENTER);
-
 
         add(new JPanel(), BorderLayout.WEST);
         add(new JPanel(), BorderLayout.SOUTH);

@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.ArrayList;
 
 import chat.Shared.AuthencationResponse;
 import chat.Shared.UserConsoleReader;
@@ -72,5 +73,16 @@ public class Client {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public ArrayList<String> clientsList() throws IOException {
+        ArrayList<String> clients = new ArrayList<String>();
+        clientWriter.println(security.encrypt(":clients"));
+        String clientsString = security.decrypt(securedPrinter.readLine());
+
+        for (String client : clientsString.split(" ")) {
+            clients.add(client);
+        }
+        return clients;
     }
 }

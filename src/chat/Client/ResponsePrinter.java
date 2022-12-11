@@ -34,8 +34,9 @@ public class ResponsePrinter implements Runnable {
         try {
             while (true) {
                 String line = socketReader.readLine();
-                if(chatArea != null){
-                    chatArea.append(security.decrypt(line) + "\n");
+                if (chatArea != null) {
+                    String text = security.decrypt(line);
+                    chatArea.append(text + "\n");
                 }
                 else {
                     if (line != null) {
