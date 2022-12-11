@@ -20,7 +20,7 @@ import chat.Shared.Utils.User;
 public class Client {
 
     public User user = new User();
-    private Socket clientSocket;
+    protected Socket clientSocket;
     private DH hell = new DH();
     protected PrintWriter clientWriter;
     protected ResponsePrinter securedPrinter;

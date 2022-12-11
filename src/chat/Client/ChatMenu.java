@@ -3,6 +3,7 @@ package chat.Client;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 
 public class ChatMenu extends JFrame implements ActionListener, FocusListener{
     private static JTextArea chatArea;
@@ -11,7 +12,9 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
     private static JButton sendMessageButton;
     private static JMenuItem exit;
     private static JMenuItem changeAccount;
-    public ChatMenu(){
+    private static Client client;
+    public ChatMenu(Client client){
+        this.client = client;
         setTitle("Java Chat");
         setLayout(new BorderLayout(10, 10));
         setBounds(600, 300, 600, 500);
@@ -59,7 +62,12 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
         chatArea.setEditable(false);
         chatArea.setLineWrap(true);
         centerPanel.add(new JScrollPane(chatArea), BorderLayout.CENTER);
-
+        try {
+            ResponsePrinter printer = new ResponsePrinter(client.clientSocket, client.security, chatArea);
+            new Thread(printer).start();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         JPanel bottomCentralPanel = new JPanel(new BorderLayout(10, 10));
         centerPanel.add(bottomCentralPanel, BorderLayout.SOUTH);
@@ -75,8 +83,10 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
         messageArea.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if(e.getKeyCode()==10 && !(messageArea.getText().equals(""))){
-                    chatArea.append(messageArea.getText() + "\n");
+                if(e.getKeyCode()==10 && !(messageArea.getText().isBlank())){
+                    client.clientWriter.println(client.security.encrypt(messageArea.getText()));
+                    client.clientWriter.flush();
+                    chatArea.append(client.user.getUsername() + ": " + messageArea.getText() + "\n");
                     messageArea.selectAll();
                     messageArea.replaceSelection(null);
                 }
@@ -121,7 +131,8 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()==sendMessageButton && !(messageArea.getText().equals("Написать сообщение..."))){
-            chatArea.append(messageArea.getText() + "\n");
+            client.clientWriter.println(client.security.encrypt(messageArea.getText()));
+            client.clientWriter.flush();
             messageArea.selectAll();
             messageArea.replaceSelection(null);
             messageArea.setForeground(Color.gray);

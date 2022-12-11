@@ -7,9 +7,12 @@ import java.net.Socket;
 
 import chat.Shared.Security.RSA;
 
+import javax.swing.*;
+
 public class ResponsePrinter implements Runnable {
     private BufferedReader socketReader;
     private RSA security;
+    private JTextArea chatArea;
     
     public ResponsePrinter(Socket input, RSA security) throws IOException {
         this.socketReader = new BufferedReader(new InputStreamReader(input.getInputStream()));
@@ -20,18 +23,28 @@ public class ResponsePrinter implements Runnable {
         this.socketReader = new BufferedReader(new InputStreamReader(input.getInputStream())); 
     }
 
+    public ResponsePrinter(Socket input, RSA security, JTextArea chatArea) throws IOException {
+        this.socketReader = new BufferedReader(new InputStreamReader(input.getInputStream()));
+        this.security = security;
+        this.chatArea = chatArea;
+    }
+
     @Override
     public void run() {
         try {
             while (true) {
                 String line = socketReader.readLine();
-                if (line != null) {
-                    System.out.println(security.decrypt(line));
+                if(chatArea != null){
+                    chatArea.append(security.decrypt(line) + "\n");
                 }
                 else {
-                    System.err.println("Server disconnected :(");
-                    // sys.exit необходим, так как в случае break'a главный поток останется работать.
-                    System.exit(0);
+                    if (line != null) {
+                        System.out.println(security.decrypt(line));
+                    } else {
+                        System.err.println("Server disconnected :(");
+                        // sys.exit необходим, так как в случае break'a главный поток останется работать.
+                        System.exit(0);
+                    }
                 }
             }
         } catch (IOException e) {

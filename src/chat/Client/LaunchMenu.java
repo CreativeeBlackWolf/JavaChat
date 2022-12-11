@@ -1,8 +1,11 @@
 package chat.Client;
 
+import chat.Shared.AuthencationResponse;
+import chat.Shared.Exceptions.ServerVerifyException;
+
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
+import java.io.IOException;
 
 public class LaunchMenu extends JFrame{
     private static JButton bLogin;
@@ -45,14 +48,20 @@ public class LaunchMenu extends JFrame{
         bLogin.setFocusPainted(false);
         bLogin.addActionListener(e -> {
             String login = loginField.getText();
-            char[] pass1 = passwordField.getPassword();
-            char[] pass2 = {'a','d','m','i','n'};
-            if(login.equals("admin") & Arrays.equals(pass1,pass2)){
-                dispose();
-                new ChatMenu();
-            }
-            else{
-                successMessage.setText("Неправильный логин или пароль");
+            String pass = passwordField.getText();
+            try {
+                Client client = new Client("localhost", 2727);
+                client.user.setUsername(login);
+                AuthencationResponse authResponse = client.login(login, pass);
+                if(authResponse == AuthencationResponse.LOGIN_SUCCESS){
+                    new ChatMenu(client);
+                    dispose();
+                }
+                else {
+                    successMessage.setText("Неверный пароль или логин");
+                }
+            } catch (IOException | ServerVerifyException ex) {
+                throw new RuntimeException(ex);
             }
         });
         bLogin.setBounds(100, 130, 80, 25);
