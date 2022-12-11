@@ -48,7 +48,7 @@ public class LaunchMenu extends JFrame{
         bLogin.setFocusPainted(false);
         bLogin.addActionListener(e -> {
             String login = loginField.getText();
-            String pass = passwordField.getPassword().toString();
+            String pass = passwordField.getText();
             try {
                 Client client = new Client("localhost", 2727);
                 client.user.setUsername(login);
