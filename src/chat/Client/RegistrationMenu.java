@@ -18,6 +18,9 @@ public class RegistrationMenu extends JFrame implements ActionListener{
         setTitle("Регистрация");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
+        ImageIcon image = new ImageIcon("src/icon.png");
+        this.setIconImage(image.getImage());
+
         addWindowListener(new WindowAdapter()
         {
             public void windowClosing(WindowEvent e)
@@ -66,7 +69,7 @@ public class RegistrationMenu extends JFrame implements ActionListener{
         statusMessageLabel.setBounds(25, 190, 80, 25);
         panel.add(statusMessageLabel);
 
-        statusMessage = new JTextField(32);
+        statusMessage = new JTextField(128);
         statusMessage.setBounds(100, 190, 165, 25);
         panel.add(statusMessage);
 
@@ -91,6 +94,8 @@ public class RegistrationMenu extends JFrame implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if(e.getSource()==bRegistration){
 
+        }
     }
 }

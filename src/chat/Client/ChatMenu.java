@@ -17,6 +17,9 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
         setBounds(600, 300, 600, 500);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
+        ImageIcon image = new ImageIcon("src/icon.png");
+        this.setIconImage(image.getImage());
+
         addWindowListener(new WindowAdapter()
         {
             public void windowClosing(WindowEvent e)

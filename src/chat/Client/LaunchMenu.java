@@ -18,6 +18,9 @@ public class LaunchMenu extends JFrame{
         setResizable(false);
         setTitle("Вход");
 
+        ImageIcon image = new ImageIcon("src/icon.png");
+        this.setIconImage(image.getImage());
+
         JPanel panel = new JPanel();
         panel.setLayout(null);
         add(panel);
