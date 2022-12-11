@@ -67,11 +67,29 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
 
         sendMessageButton = new JButton("Отправить");
         sendMessageButton.setFocusPainted(false);
-        sendMessageButton.setPreferredSize(new Dimension(150, 100));
+        sendMessageButton.setPreferredSize(new Dimension(150, 0));
         sendMessageButton.addActionListener(this);
         bottomCentralPanel.add(sendMessageButton, BorderLayout.EAST);
 
         messageArea = new JTextArea("Написать сообщение...");
+        messageArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.getKeyCode()==10 && !(messageArea.getText().equals(""))){
+                    chatArea.append(messageArea.getText() + "\n");
+                    messageArea.selectAll();
+                    messageArea.replaceSelection(null);
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if(e.getKeyCode()==10 && !(messageArea.getText().equals(""))){
+                    messageArea.selectAll();
+                    messageArea.replaceSelection(null);
+                }
+            }
+        });
         messageArea.setForeground(Color.gray);
         messageArea.addFocusListener(this);
         messageArea.setLineWrap(true);
