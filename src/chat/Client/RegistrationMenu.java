@@ -13,7 +13,6 @@ public class RegistrationMenu extends JFrame implements ActionListener{
     private static JPasswordField passwordField;
     private static JTextField nameField;
     private static JTextField lastNameField;
-    private static JTextField statusMessage;
     private static JTextField numberField;
     private static JButton bRegistration;
     private Client client;
@@ -24,6 +23,9 @@ public class RegistrationMenu extends JFrame implements ActionListener{
         setResizable(false);
         setTitle("Регистрация");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        ImageIcon image = new ImageIcon("src/icon.png");
+        setIconImage(image.getImage());
 
         addWindowListener(new WindowAdapter()
         {
@@ -69,16 +71,8 @@ public class RegistrationMenu extends JFrame implements ActionListener{
         lastNameField.setBounds(100, 150, 165, 25);
         panel.add(lastNameField);
 
-        JLabel statusMessageLabel = new JLabel("Статус");
-        statusMessageLabel.setBounds(25, 190, 80, 25);
-        panel.add(statusMessageLabel);
-
-        statusMessage = new JTextField(32);
-        statusMessage.setBounds(100, 190, 165, 25);
-        panel.add(statusMessage);
-
         JLabel numberLabel = new JLabel("Номер");
-        numberLabel.setBounds(25, 230, 80, 25);
+        numberLabel.setBounds(25, 190, 80, 25);
         panel.add(numberLabel);
 
         numberField = new JTextField(32);
@@ -88,7 +82,7 @@ public class RegistrationMenu extends JFrame implements ActionListener{
         bRegistration = new JButton("Зарегистрироваться");
         bRegistration.setFocusPainted(false);
         bRegistration.addActionListener(this);
-        bRegistration.setBounds(100,270,150, 25);
+        bRegistration.setBounds(100,230,155, 25);
         bRegistration.setFont(new Font(null,Font.BOLD,11));
         panel.add(bRegistration);
 

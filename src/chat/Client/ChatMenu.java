@@ -23,7 +23,7 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
         ImageIcon image = new ImageIcon("src/icon.png");
-        this.setIconImage(image.getImage());
+        setIconImage(image.getImage());
 
         addWindowListener(new WindowAdapter()
         {
@@ -37,7 +37,7 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
                         JOptionPane.WARNING_MESSAGE,
                         null,
                         new String[]{"Да", "Нет"},
-                        0);
+                        null);
 
                 if (result == JOptionPane.YES_OPTION)
                     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -64,10 +64,6 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
         chatArea.setEditable(false);
         chatArea.setLineWrap(true);
         centerPanel.add(new JScrollPane(chatArea), BorderLayout.CENTER);
-
-        JLabel userNameLable = new JLabel("Пользователь: " + client.user.getUsername());
-        userNameLable.setFont(new Font(null, Font.BOLD, 12));
-        centerPanel.add(userNameLable, BorderLayout.NORTH);
 
         JPanel rightCentralPanel = new JPanel(new BorderLayout(10, 10));
         rightCentralPanel.setPreferredSize(new Dimension(150,150));
@@ -126,8 +122,17 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
 
         add(new JPanel(), BorderLayout.WEST);
         add(new JPanel(), BorderLayout.EAST);
-        add(new JPanel(), BorderLayout.NORTH);
         add(new JPanel(), BorderLayout.SOUTH);
+
+        JPanel topPanel = new JPanel();
+        topPanel.setPreferredSize(new Dimension(15, 25));
+        topPanel.setLayout(null);
+        add(topPanel, BorderLayout.NORTH);
+
+        JLabel userNameLabel = new JLabel("Пользователь: " + client.user.getUsername());
+        userNameLabel.setFont(new Font("Times New Roman", Font.BOLD, 14));
+        userNameLabel.setBounds(10,10,300,15);
+        topPanel.add(userNameLabel);
 
         setLocationRelativeTo(null);
         setVisible(true);
