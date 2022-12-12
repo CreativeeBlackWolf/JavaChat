@@ -1,8 +1,12 @@
 package chat.Client;
 
 import javax.swing.*;
+
+import chat.Shared.AuthencationResponse;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 
 public class RegistrationMenu extends JFrame implements ActionListener{
     private static JTextField userNameField;
@@ -10,9 +14,12 @@ public class RegistrationMenu extends JFrame implements ActionListener{
     private static JTextField nameField;
     private static JTextField lastNameField;
     private static JTextField statusMessage;
-    private static JTextField number;
+    private static JTextField numberField;
     private static JButton bRegistration;
-    public RegistrationMenu(){
+    private Client client;
+
+    public RegistrationMenu (Client client) {
+        this.client = client;
         setSize(320, 350);
         setResizable(false);
         setTitle("Регистрация");
@@ -74,9 +81,9 @@ public class RegistrationMenu extends JFrame implements ActionListener{
         numberLabel.setBounds(25, 230, 80, 25);
         panel.add(numberLabel);
 
-        number = new JTextField(32);
-        number.setBounds(100, 230, 165, 25);
-        panel.add(number);
+        numberField = new JTextField(32);
+        numberField.setBounds(100, 230, 165, 25);
+        panel.add(numberField);
 
         bRegistration = new JButton("Зарегистрироваться");
         bRegistration.setFocusPainted(false);
@@ -91,8 +98,36 @@ public class RegistrationMenu extends JFrame implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource()==bRegistration){
+        if (e.getSource() == bRegistration) {
+            String username = userNameField.getText();
+            String password = passwordField.getText();
+            String name = nameField.getText();
+            String lastname = lastNameField.getText();
+            String phoneNumber = numberField.getText();
 
+
+            client.clientWriter.println(client.security.encrypt("REGISTER_ME"));
+            client.clientWriter.println(client.security.encrypt(username));
+            client.clientWriter.println(client.security.encrypt(password));
+            client.clientWriter.println(client.security.encrypt(name));
+            client.clientWriter.println(client.security.encrypt(lastname));
+            client.clientWriter.println(client.security.encrypt(phoneNumber));
+            client.clientWriter.flush();
+
+            AuthencationResponse authResponse = null;
+            try {
+                authResponse = AuthencationResponse.valueOf(client.security.decrypt(client.securedPrinter.readLine()));
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
+            if (authResponse == AuthencationResponse.REGISTERED) {
+                client.user.setUsername(username);
+                dispose();
+                new ChatMenu(client);
+            } else {
+                JOptionPane.showMessageDialog(null, authResponse.name());
+            }
         }
     }
 }

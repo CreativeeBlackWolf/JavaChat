@@ -18,8 +18,14 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
     private static JPasswordField passwordField;
     private static JTextField loginField;
     private static JCheckBox showPass;
-
+    private Client client;
+    
     public LaunchMenu() {
+        try {
+            this.client = new Client("localhost", 2727);
+        } catch (IOException | ServerVerifyException e1) {
+            e1.printStackTrace();
+        }
         setSize(345, 210);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
@@ -94,22 +100,17 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if(e.getKeyCode()==10){
+        if (e.getKeyCode()==10) {
             String login = loginField.getText();
             String pass = passwordField.getText();
-            try {
-                Client client = new Client("localhost", 2727);
-                client.user.setUsername(login);
-                AuthencationResponse authResponse = client.login(login, pass);
-                if(authResponse == AuthencationResponse.LOGIN_SUCCESS){
-                    new ChatMenu(client);
-                    dispose();
-                }
-                else {
-                    successMessage.setText("Неверный пароль или логин");
-                }
-            } catch (IOException | ServerVerifyException ex) {
-                throw new RuntimeException(ex);
+            client.user.setUsername(login);
+            AuthencationResponse authResponse = client.login(login, pass);
+            if(authResponse == AuthencationResponse.LOGIN_SUCCESS){
+                new ChatMenu(client);
+                dispose();
+            }
+            else {
+                successMessage.setText("Неверный пароль или логин");
             }
         }
 
@@ -122,7 +123,7 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource()==bLogin){
+        if (e.getSource()==bLogin) {
             String login = loginField.getText();
             String pass = passwordField.getText();
             try {
@@ -141,9 +142,9 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
             }
         }
 
-        if(e.getSource()==bRegistration){
+        if (e.getSource()==bRegistration) {
             dispose();
-            new RegistrationMenu();
+            new RegistrationMenu(client);
         }
     }
 }
