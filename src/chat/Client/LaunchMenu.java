@@ -20,51 +20,52 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
     private static JCheckBox showPass;
 
     public LaunchMenu() {
-        setSize(345, 210);
+        setSize(345, 220);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setTitle("Вход");
 
         ImageIcon image = new ImageIcon("src/icon.png");
-        this.setIconImage(image.getImage());
+        setIconImage(image.getImage());
 
         JPanel panel = new JPanel();
         panel.setLayout(null);
         add(panel);
 
         JLabel userLabel = new JLabel("Логин");
-        userLabel.setBounds(25, 30, 80, 25);
+        userLabel.setBounds(25, 20, 80, 25);
         panel.add(userLabel);
 
         loginField = new JTextField(32);
-        loginField.setBounds(100, 30, 165, 25);
+        loginField.setBounds(100, 20, 165, 25);
         panel.add(loginField);
         loginField.addKeyListener(this);
 
         JLabel passwordLabel = new JLabel("Пароль");
-        passwordLabel.setBounds(25, 70, 80, 25);
+        passwordLabel.setBounds(25, 60, 80, 25);
         panel.add(passwordLabel);
 
         passwordField = new JPasswordField(32);
-        passwordField.setBounds(100, 70, 165, 25);
+        passwordField.setBounds(100, 60, 165, 25);
         panel.add(passwordField);
         passwordField.addKeyListener(this);
 
         bLogin = new JButton("Войти");
         bLogin.setFocusPainted(false);
         bLogin.addActionListener(this);
-        bLogin.setBounds(100, 130, 80, 25);
+        bLogin.setBounds(90, 130, 80, 25);
         panel.add(bLogin);
 
         bRegistration = new JButton("Регистрация");
         bRegistration.setFocusPainted(false);
         bRegistration.addActionListener(this);
-        bRegistration.setBounds(182, 130, 110, 25);
+        bRegistration.setBounds(172, 130, 110, 25);
         panel.add(bRegistration);
 
         successMessage = new JLabel("");
+        successMessage.setFont(new Font(null, Font.BOLD, 12));
         successMessage.setForeground(Color.RED);
-        successMessage.setBounds(90, 3, 300, 25);
+        successMessage.setBounds(100, 80, 300, 25);
         panel.add(successMessage);
 
         showPass = new JCheckBox("Показать пароль");
@@ -80,7 +81,7 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
         });
         showPass.setFocusPainted(false);
         showPass.setFont(new Font("Cambria",Font.PLAIN,12));
-        showPass.setBounds(182, 100, 150, 25);
+        showPass.setBounds(182, 102, 150, 15);
         panel.add(showPass);
 
         setLocationRelativeTo(null);
