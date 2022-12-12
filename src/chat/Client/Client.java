@@ -64,6 +64,7 @@ public class Client {
     }
 
     public AuthencationResponse login(String login, String password) {
+        clientWriter.println(security.encrypt("LOG_ME_IN"));
         clientWriter.println(security.encrypt(login));
         clientWriter.println(security.encrypt(password));
         clientWriter.flush();
