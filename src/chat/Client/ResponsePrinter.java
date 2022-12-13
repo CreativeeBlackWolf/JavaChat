@@ -41,7 +41,7 @@ public class ResponsePrinter implements Runnable {
                 String line = security.decrypt(socketReader.readLine());
                 if (chatArea != null) {
                     if (serverEvent == ServerEvent.USER_JOINED) {
-                        onlineUsersArea.append(line);
+                        onlineUsersArea.append(line + "\n");
                         chatArea.append("SERVER: " + line + " has joined chatroom!\n");
                     } else if (serverEvent == ServerEvent.MESSAGE_RECIEVED) {
                         chatArea.append(line + "\n");
