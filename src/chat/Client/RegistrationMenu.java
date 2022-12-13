@@ -94,7 +94,7 @@ public class RegistrationMenu extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == bRegistration) {
             String username = userNameField.getText();
-            String password = passwordField.getText();
+            String password = new String(passwordField.getPassword());
             String name = nameField.getText();
             String lastname = lastNameField.getText();
             String phoneNumber = numberField.getText();

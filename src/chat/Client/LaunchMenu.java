@@ -22,7 +22,7 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
     
     public LaunchMenu() {
         try {
-            this.client = new Client("localhost", 2727);
+            this.client = new Client(Config.HOST, Config.PORT);
         } catch (IOException | ServerVerifyException e1) {
             e1.printStackTrace();
         }
@@ -103,7 +103,7 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode()==10) {
             String login = loginField.getText();
-            String pass = passwordField.getText();
+            String pass = new String(passwordField.getPassword());
             client.user.setUsername(login);
             AuthencationResponse authResponse = client.login(login, pass);
             if(authResponse == AuthencationResponse.LOGIN_SUCCESS){
@@ -126,7 +126,7 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource()==bLogin) {
             String login = loginField.getText();
-            String pass = passwordField.getText();
+            String pass = new String(passwordField.getPassword());
                 client.user.setUsername(login);
                 AuthencationResponse authResponse = client.login(login, pass);
                 if(authResponse == AuthencationResponse.LOGIN_SUCCESS){
