@@ -1,0 +1,10 @@
+package chat.Shared;
+
+public enum ServerEvent {
+    USER_JOINED,
+    USER_DISCONNECTED,
+    COMMAND_EXECUTED,
+    WRONG_COMMAND,
+    MESSAGE_RECIEVED,
+    CLIENTS_LIST_RECIEVED
+}

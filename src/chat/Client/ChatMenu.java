@@ -78,7 +78,7 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
         rightCentralPanel.add(new JScrollPane(onlineUsersArea), BorderLayout.CENTER);
 
         try {
-            ResponsePrinter printer = new ResponsePrinter(client.clientSocket, client.security, chatArea);
+            ResponsePrinter printer = new ResponsePrinter(client.clientSocket, client.security, chatArea, onlineUsersArea);
             new Thread(printer).start();
         } catch (IOException e) {
             throw new RuntimeException(e);

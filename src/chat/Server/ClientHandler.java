@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import chat.Shared.AuthencationResponse;
+import chat.Shared.ServerEvent;
 import chat.Shared.Exceptions.InvalidNameException;
 import chat.Shared.Exceptions.InvalidPhoneNumberException;
 import chat.Shared.Exceptions.InvalidPasswordException;
@@ -50,7 +51,9 @@ public class ClientHandler {
     }
 
     public void startListening() {
-        broadcast("SERVER: " + username + " has joined chatroom!");
+        broadcast(ServerEvent.USER_JOINED.name());
+        broadcast(username);
+        sendClientsList();
         try {
             while (true) {
                 String clientData = socketReader.readLine();
@@ -62,9 +65,11 @@ public class ClientHandler {
                 String message = security.decrypt(clientData);
                 
                 if (message.startsWith(":clients")) {
+                    broadcast(ServerEvent.COMMAND_EXECUTED.name());
                     sendClientsList();
                 }
                 else {
+                    broadcast(ServerEvent.MESSAGE_RECIEVED.name());
                     broadcast(username + ": " + message);
                 }
             }
@@ -151,14 +156,15 @@ public class ClientHandler {
     private void sendClientsList() {
         String message = "";
         for (String username : clients.keySet()) {
-            message += "\t" + username;
+            message += username + " ";
         }
+        sendEncrypted(ServerEvent.CLIENTS_LIST_RECIEVED.name());
         sendEncrypted(message);
     }
 
     private void disconnect() {
         clients.remove(username);
-        broadcast(username + " has disconnected.");
+        broadcast(ServerEvent.USER_DISCONNECTED.name());
     }
 
     private void broadcast(String message) {
