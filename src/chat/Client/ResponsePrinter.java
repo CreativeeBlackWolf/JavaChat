@@ -51,7 +51,7 @@ public class ResponsePrinter implements Runnable {
                         for (String client : line.split(" ")) {
                             onlineUsersArea.append(client + "\n");
                         }
-                        chatArea.append(line + "\n");
+                        chatArea.append("Список участников обновлён\n");
                     } else if (serverEvent == ServerEvent.USER_DISCONNECTED) {
                         chatArea.append("SERVER: " + line + " has disconnected.\n");
                     } else {
