@@ -10,7 +10,9 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import chat.Shared.AuthencationResponse;
+import chat.Shared.DatabaseFields;
 import chat.Shared.ServerEvent;
+import chat.Shared.Database.UserDatabaseWorker;
 import chat.Shared.Exceptions.InvalidNameException;
 import chat.Shared.Exceptions.InvalidPhoneNumberException;
 import chat.Shared.Exceptions.InvalidPasswordException;
@@ -65,8 +67,14 @@ public class ClientHandler {
                 String message = security.decrypt(clientData);
                 
                 if (message.startsWith(":clients")) {
-                    broadcast(ServerEvent.COMMAND_EXECUTED.name());
                     sendClientsList();
+                } else if (message.toLowerCase().startsWith(":userprofile")) {
+                    if (message.split(" ").length == 2) {
+                        sendProfileInfo(message.split(" ")[1]);
+                    } else {
+                        sendEncrypted(ServerEvent.COMMAND_WROTE_WRONG.name());
+                        sendEncrypted("Команда должна принимать только 1 аргумент: username");
+                    }
                 }
                 else {
                     broadcast(ServerEvent.MESSAGE_RECIEVED.name());
@@ -153,6 +161,29 @@ public class ClientHandler {
         }
     }
 
+    private void sendProfileInfo(String username) {
+        String message;
+        UserDatabaseWorker userDB = new UserDatabaseWorker();
+        if (!userDB.userExists(username)) {
+            sendEncrypted(ServerEvent.COMMAND_WROTE_WRONG.name());
+            sendEncrypted("Профиль с именем пользователя `" + username + "` не найден.");
+            return;
+        }
+        String profileUsername = userDB.getParam(DatabaseFields.username, username);
+        String profileName = userDB.getParam(DatabaseFields.name, username);
+        String profileLastName = userDB.getParam(DatabaseFields.last_name, username);
+        String profileStatusMessage = userDB.getParam(DatabaseFields.status_message, username);
+        String profilePhoneNumber = userDB.getParam(DatabaseFields.phone_number, username);
+        message = String.format("%s | %s | %s | %s | %s", 
+                                profileUsername,
+                                profileName,
+                                profileLastName,
+                                profileStatusMessage,
+                                profilePhoneNumber);
+        sendEncrypted(ServerEvent.USER_PROFILE_RECIEVED.name());
+        sendEncrypted(message);
+    }
+
     private void sendClientsList() {
         String message = "";
         for (String username : clients.keySet()) {
@@ -165,6 +196,7 @@ public class ClientHandler {
     private void disconnect() {
         clients.remove(username);
         broadcast(ServerEvent.USER_DISCONNECTED.name());
+        broadcast(username);
     }
 
     private void broadcast(String message) {
