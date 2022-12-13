@@ -17,8 +17,8 @@ public class Authenticator {
         return password.equals(decryptedPassword);
     }
 
-    public String checkUnique(String number) {
-        return db.checkUnique(number);
+    public String checkUnique(String username, String number) {
+        return db.checkUnique(username, number);
     }
 
     public void registerUser(User user) {

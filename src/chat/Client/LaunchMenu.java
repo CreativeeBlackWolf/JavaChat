@@ -22,7 +22,7 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
     
     public LaunchMenu() {
         try {
-            this.client = new Client("saqriphnix.tk", 2727);
+            this.client = new Client("localhost", 2727);
         } catch (IOException | ServerVerifyException e1) {
             e1.printStackTrace();
         }

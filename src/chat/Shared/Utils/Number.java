@@ -1,11 +1,11 @@
 package chat.Shared.Utils;
-import chat.Shared.Exceptions.InvalidNumberException;
+import chat.Shared.Exceptions.InvalidPhoneNumberException;
 
 
 public class Number {
     private String number;
 
-    public Number(String number) throws InvalidNumberException {
+    public Number(String number) throws InvalidPhoneNumberException {
         this.number = setNumber(number);
     }
 
@@ -13,12 +13,12 @@ public class Number {
         
     }
 
-    public String setNumber(String number) throws InvalidNumberException {
+    public String setNumber(String number) throws InvalidPhoneNumberException {
         if (!(number.startsWith("+7")) && !(number.startsWith("8"))) {
-            throw new InvalidNumberException("Номер должен начинаться с \"+7\" или с \"8\".");
+            throw new InvalidPhoneNumberException("Номер должен начинаться с \"+7\" или с \"8\".");
         }
         if (number.replaceAll("\\D", "").length() != 11){
-            throw new InvalidNumberException("Номер должен содержать 11 цифр.");
+            throw new InvalidPhoneNumberException("Номер должен содержать 11 цифр.");
         }
 
         this.number = number;

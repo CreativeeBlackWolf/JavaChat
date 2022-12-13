@@ -101,18 +101,17 @@ public class UserDatabaseWorker {
         }
     }
 
-    public String checkUnique(String number) {
-        // String statement = "SELECT * FROM Users WHERE username = ?";
+    public String checkUnique(String username, String number) {
+        String statement = "SELECT * FROM Users WHERE username = ?";
 
-        // try (PreparedStatement stmt = connection.prepareStatement(statement)) {
-        //     stmt.setString(1, username);
-        //     ResultSet result = stmt.executeQuery();
-        //     if (result.next()) return "USERNAME_EXISTS";
-        // } catch (SQLException e) {
-        //     e.printStackTrace();
-        //     return null;
-        // }
-        String statement;
+        try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+            stmt.setString(1, username);
+            ResultSet result = stmt.executeQuery();
+            if (result.next()) return "USERNAME_EXISTS";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
         statement = "SELECT * FROM Users WHERE phone_number = ?";
         try (PreparedStatement stmt = connection.prepareStatement(statement)) {
             stmt.setString(1, number);

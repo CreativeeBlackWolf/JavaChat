@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 import chat.Shared.AuthencationResponse;
 import chat.Shared.Exceptions.InvalidNameException;
-import chat.Shared.Exceptions.InvalidNumberException;
+import chat.Shared.Exceptions.InvalidPhoneNumberException;
 import chat.Shared.Exceptions.InvalidPasswordException;
 import chat.Shared.Security.DH;
 import chat.Shared.Security.RSA;
@@ -74,11 +74,14 @@ public class ClientHandler {
     }
 
     private String authenticateUser() throws IOException {
-        while (true) {
-            String encryptedUsername = socketReader.readLine();
-            String decryptedUsername = security.decrypt(encryptedUsername);
-            String encryptedPassword = socketReader.readLine();
-            String decryptedPassword = security.decrypt(encryptedPassword);
+        String encryptedTypeOfAuth = socketReader.readLine();
+        String decryptedTypeOfAuth = security.decrypt(encryptedTypeOfAuth);
+        String encryptedUsername = socketReader.readLine();
+        String decryptedUsername = security.decrypt(encryptedUsername);
+        String encryptedPassword = socketReader.readLine();
+        String decryptedPassword = security.decrypt(encryptedPassword);
+        
+        if (decryptedTypeOfAuth.equals("LOG_ME_IN")) {
             if (NICKNAME_RULES.matcher(decryptedUsername).matches()) {
                 if (!clients.containsKey(decryptedUsername)) {
                     if (auth.isUserRegistered(decryptedUsername)) {
@@ -88,49 +91,60 @@ public class ClientHandler {
                         }
                         else {
                             sendEncrypted(AuthencationResponse.INVALID_PASSWORD.name());
+                            return null;
                         }
                     }
                     else {
-                        sendEncrypted(AuthencationResponse.REGISTER_PROCESS.name());
-                        String encryptedName = socketReader.readLine();
-                        String encryptedLastName = socketReader.readLine();
-                        String name = security.decrypt(encryptedName);
-                        String lastName = security.decrypt(encryptedLastName);
-                        
-                        try {
-                            String encryptedNumber = socketReader.readLine();
-                            Number number = new Number(security.decrypt(encryptedNumber));
-                            String check = auth.checkUnique(number.convertToStandard());
-                            if (!check.equals("CHECK_SUCCESSFULL")) {
-                                sendEncrypted(AuthencationResponse.valueOf(check).name());
-                                return null;
-                            }
-
-                            User user = new User(decryptedUsername, 
-                                                name, 
-                                                lastName, 
-                                                "Ayo, i'm new there!", 
-                                                decryptedPassword, 
-                                                number);
-                            auth.registerUser(user);
-                            sendEncrypted(AuthencationResponse.REGISTERED.name());
-                            return decryptedUsername;
-                        } catch (InvalidNameException 
-                                | InvalidPasswordException 
-                                | IOException
-                                | InvalidNumberException e) {
-                            e.printStackTrace();
-                            sendEncrypted("OOPS: server just got an exception! Please try again or contact developers.");
-                        }
+                        sendEncrypted(AuthencationResponse.INVALID_USERNAME.name());
+                        return null;
                     }
                 }
                 else {
                     sendEncrypted(AuthencationResponse.ALREADY_LOGGED_IN.name());
+                    return null;
                 }
             }
             else {
                 sendEncrypted(AuthencationResponse.INVALID_USERNAME.name());
+                return null;
             }
+        } else if (decryptedTypeOfAuth.equals("REGISTER_ME")) {
+            // sendEncrypted(AuthencationResponse.REGISTER_PROCESS.name());
+            String encryptedName = socketReader.readLine();
+            String encryptedLastName = socketReader.readLine();
+            String name = security.decrypt(encryptedName);
+            String lastName = security.decrypt(encryptedLastName);
+            
+            try {
+                String encryptedNumber = socketReader.readLine();
+                Number number = new Number(security.decrypt(encryptedNumber));
+                String check = auth.checkUnique(decryptedUsername, number.convertToStandard());
+                if (!check.equals("CHECK_SUCCESSFULL")) {
+                    sendEncrypted(AuthencationResponse.valueOf(check).name());
+                    return null;
+                }
+
+                User user = new User(decryptedUsername, 
+                                    name, 
+                                    lastName, 
+                                    "Ayo, i'm new there!", 
+                                    decryptedPassword, 
+                                    number);
+                auth.registerUser(user);
+                sendEncrypted(AuthencationResponse.REGISTERED.name());
+                return decryptedUsername;
+            } catch (InvalidNameException 
+                    | InvalidPasswordException 
+                    | IOException
+                    | InvalidPhoneNumberException e) {
+                e.printStackTrace();
+                sendEncrypted("OOPS: server just got an exception! Please try again or contact developers.");
+                return null;
+            }
+        } else {
+            sendEncrypted("Authencation type " + decryptedTypeOfAuth + " unknown.");
+            disconnect();
+            return null;
         }
     }
 
