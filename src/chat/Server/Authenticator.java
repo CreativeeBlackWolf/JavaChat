@@ -6,10 +6,10 @@ import chat.Shared.Utils.User;
 
 public class Authenticator {
     
-    private UserDatabaseWorker db;
+    private final UserDatabaseWorker db;
 
-    public Authenticator() {
-        db = new UserDatabaseWorker();
+    public Authenticator(UserDatabaseWorker db) {
+        this.db = db;
     }
 
     public boolean authenticate(String decryptedPassword, String username) {
@@ -27,6 +27,10 @@ public class Authenticator {
 
     public boolean isUserRegistered(String username) {
         return db.userExists(username);
+    }
+
+    public void close() {
+        db.close();
     }
 
 }

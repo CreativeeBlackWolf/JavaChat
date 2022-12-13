@@ -101,6 +101,19 @@ public class UserDatabaseWorker {
         }
     }
 
+    public boolean setParam(DatabaseFields field, String username, String parameterToSet) {
+        String statement = "UPDATE Users SET " + field.name() + "=? WHERE username = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+            stmt.setString(1, parameterToSet);
+            stmt.setString(2, username);
+            return stmt.executeUpdate() >= 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public String checkUnique(String username, String number) {
         String statement = "SELECT * FROM Users WHERE username = ?";
 
@@ -121,6 +134,14 @@ public class UserDatabaseWorker {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public void close() {
+        try {
+            worker.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
