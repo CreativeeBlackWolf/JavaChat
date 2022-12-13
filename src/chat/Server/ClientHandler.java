@@ -6,13 +6,17 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.security.PublicKey;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import chat.Shared.AuthencationResponse;
+import chat.Shared.DatabaseFields;
+import chat.Shared.ServerEvent;
+import chat.Shared.Database.UserDatabaseWorker;
 import chat.Shared.Exceptions.InvalidNameException;
-import chat.Shared.Exceptions.InvalidNumberException;
 import chat.Shared.Exceptions.InvalidPasswordException;
+import chat.Shared.Exceptions.InvalidPhoneNumberException;
 import chat.Shared.Security.DH;
 import chat.Shared.Security.RSA;
 import chat.Shared.Utils.KeyConverter;
@@ -35,14 +39,16 @@ public class ClientHandler {
     private final Map<String, ClientHandler> clients;
     private final RSA security;
     private static final DH hell = new DH();
+    private final UserDatabaseWorker userDB;
 
 
-    public ClientHandler(Socket clientSocket, Map<String, ClientHandler> clients, Authenticator auth, RSA security) throws IOException {
+    public ClientHandler(Socket clientSocket, Map<String, ClientHandler> clients, RSA security, UserDatabaseWorker userDB) throws IOException {
         this.socketWriter = new PrintWriter(clientSocket.getOutputStream());
         this.socketReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         this.clients = clients;
         this.clientSocket = clientSocket;
-        this.auth = auth;
+        this.userDB = userDB;
+        this.auth = new Authenticator(userDB);
         this.security = security;
 
         exchangeKeys();
@@ -50,7 +56,9 @@ public class ClientHandler {
     }
 
     public void startListening() {
-        broadcast("SERVER: " + username + " has joined chatroom!");
+        broadcast(ServerEvent.USER_JOINED.name());
+        broadcast(username);
+        sendClientsList();
         try {
             while (true) {
                 String clientData = socketReader.readLine();
@@ -60,11 +68,30 @@ public class ClientHandler {
                 }
 
                 String message = security.decrypt(clientData);
+                int messageArgsLength = message.split(" ").length;
                 
                 if (message.startsWith(":clients")) {
                     sendClientsList();
-                }
-                else {
+                } else if (message.toLowerCase().startsWith(":userprofile")) {
+                    if (messageArgsLength == 2) {
+                        sendProfileInfo(message.split(" ")[1]);
+                    } else {
+                        sendEncrypted(ServerEvent.COMMAND_WROTE_WRONG.name());
+                        sendEncrypted("Команда должна принимать только 1 аргумент: username");
+                    }
+                } else if (message.toLowerCase().startsWith(":changestatus")) {
+                    if (messageArgsLength >= 2) {
+                        changeStatusMessage(
+                            String.join(" ", 
+                                Arrays.copyOfRange(message.split(" "), 1, messageArgsLength)
+                            )
+                        );
+                    } else {
+                        sendEncrypted(ServerEvent.COMMAND_WROTE_WRONG.name());
+                        sendEncrypted("Команда должна принимать аргумент statusMessage");
+                    }
+                } else {
+                    broadcast(ServerEvent.MESSAGE_RECIEVED.name());
                     broadcast(username + ": " + message);
                 }
             }
@@ -74,11 +101,14 @@ public class ClientHandler {
     }
 
     private String authenticateUser() throws IOException {
-        while (true) {
-            String encryptedUsername = socketReader.readLine();
-            String decryptedUsername = security.decrypt(encryptedUsername);
-            String encryptedPassword = socketReader.readLine();
-            String decryptedPassword = security.decrypt(encryptedPassword);
+        String encryptedTypeOfAuth = socketReader.readLine();
+        String decryptedTypeOfAuth = security.decrypt(encryptedTypeOfAuth);
+        String encryptedUsername = socketReader.readLine();
+        String decryptedUsername = security.decrypt(encryptedUsername);
+        String encryptedPassword = socketReader.readLine();
+        String decryptedPassword = security.decrypt(encryptedPassword);
+        
+        if (decryptedTypeOfAuth.equals("LOG_ME_IN")) {
             if (NICKNAME_RULES.matcher(decryptedUsername).matches()) {
                 if (!clients.containsKey(decryptedUsername)) {
                     if (auth.isUserRegistered(decryptedUsername)) {
@@ -91,37 +121,7 @@ public class ClientHandler {
                         }
                     }
                     else {
-                        sendEncrypted(AuthencationResponse.REGISTER_PROCESS.name());
-                        String encryptedName = socketReader.readLine();
-                        String encryptedLastName = socketReader.readLine();
-                        String name = security.decrypt(encryptedName);
-                        String lastName = security.decrypt(encryptedLastName);
-                        
-                        try {
-                            String encryptedNumber = socketReader.readLine();
-                            Number number = new Number(security.decrypt(encryptedNumber));
-                            String check = auth.checkUnique(number.convertToStandard());
-                            if (!check.equals("CHECK_SUCCESSFULL")) {
-                                sendEncrypted(AuthencationResponse.valueOf(check).name());
-                                return null;
-                            }
-
-                            User user = new User(decryptedUsername, 
-                                                name, 
-                                                lastName, 
-                                                "Ayo, i'm new there!", 
-                                                decryptedPassword, 
-                                                number);
-                            auth.registerUser(user);
-                            sendEncrypted(AuthencationResponse.REGISTERED.name());
-                            return decryptedUsername;
-                        } catch (InvalidNameException 
-                                | InvalidPasswordException 
-                                | IOException
-                                | InvalidNumberException e) {
-                            e.printStackTrace();
-                            sendEncrypted("OOPS: server just got an exception! Please try again or contact developers.");
-                        }
+                        sendEncrypted(AuthencationResponse.INVALID_USERNAME.name());
                     }
                 }
                 else {
@@ -131,20 +131,88 @@ public class ClientHandler {
             else {
                 sendEncrypted(AuthencationResponse.INVALID_USERNAME.name());
             }
+        } else if (decryptedTypeOfAuth.equals("REGISTER_ME")) {
+            String encryptedName = socketReader.readLine();
+            String encryptedLastName = socketReader.readLine();
+            String name = security.decrypt(encryptedName);
+            String lastName = security.decrypt(encryptedLastName);
+            
+            try {
+                String encryptedNumber = socketReader.readLine();
+                Number number = new Number(security.decrypt(encryptedNumber));
+                String check = auth.checkUnique(decryptedUsername, number.convertToStandard());
+                if (!check.equals("CHECK_SUCCESSFULL")) {
+                    sendEncrypted(AuthencationResponse.valueOf(check).name());
+                } else {
+                    User user = new User(decryptedUsername, 
+                                        name, 
+                                        lastName, 
+                                        "Ayo, i'm new there!", 
+                                        decryptedPassword, 
+                                        number);
+                    auth.registerUser(user);
+                    sendEncrypted(AuthencationResponse.REGISTERED.name());
+                    return decryptedUsername;
+                }      
+            } catch (InvalidNameException 
+                    | InvalidPasswordException 
+                    | IOException
+                    | InvalidPhoneNumberException e) {
+                e.printStackTrace();
+                sendEncrypted("OOPS: server just got an exception! Please try again or contact developers.");
+            }
+        } else {
+            sendEncrypted("Authencation type " + decryptedTypeOfAuth + " unknown.");
+            disconnect();
+        }
+        return null;
+    }
+
+    private void sendProfileInfo(String username) {
+        String message;
+        if (!userDB.userExists(username)) {
+            sendEncrypted(ServerEvent.COMMAND_WROTE_WRONG.name());
+            sendEncrypted("Профиль с именем пользователя `" + username + "` не найден.");
+            return;
+        }
+        String profileUsername = userDB.getParam(DatabaseFields.username, username);
+        String profileName = userDB.getParam(DatabaseFields.name, username);
+        String profileLastName = userDB.getParam(DatabaseFields.last_name, username);
+        String profileStatusMessage = userDB.getParam(DatabaseFields.status_message, username);
+        String profilePhoneNumber = userDB.getParam(DatabaseFields.phone_number, username);
+        message = String.format("%s | %s | %s | %s | %s", 
+                                profileUsername,
+                                profileName,
+                                profileLastName,
+                                profileStatusMessage,
+                                profilePhoneNumber);
+        sendEncrypted(ServerEvent.USER_PROFILE_RECIEVED.name());
+        sendEncrypted(message);
+    }
+
+    private void changeStatusMessage(String statusMessage) {
+        if (userDB.setParam(DatabaseFields.status_message, username, statusMessage)) {
+            sendEncrypted(ServerEvent.COMMAND_EXECUTED.name());
+            sendEncrypted("Статус успешно изменён!");
+        } else {
+            sendEncrypted(ServerEvent.SERVER_ERROR.name());
+            sendEncrypted("Произошла ошибка при обработке команды...");
         }
     }
 
     private void sendClientsList() {
         String message = "";
         for (String username : clients.keySet()) {
-            message += "\t" + username;
+            message += username + " ";
         }
+        sendEncrypted(ServerEvent.CLIENTS_LIST_RECIEVED.name());
         sendEncrypted(message);
     }
 
     private void disconnect() {
         clients.remove(username);
-        broadcast(username + " has disconnected.");
+        broadcast(ServerEvent.USER_DISCONNECTED.name());
+        broadcast(username);
     }
 
     private void broadcast(String message) {

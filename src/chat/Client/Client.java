@@ -5,7 +5,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.ArrayList;
 
+import chat.Shared.AuthencationResponse;
 import chat.Shared.UserConsoleReader;
 import chat.Shared.UserReader;
 import chat.Shared.UserSystemInReader;
@@ -19,7 +21,7 @@ import chat.Shared.Utils.User;
 public class Client {
 
     public User user = new User();
-    private Socket clientSocket;
+    protected Socket clientSocket;
     private DH hell = new DH();
     protected PrintWriter clientWriter;
     protected ResponsePrinter securedPrinter;
@@ -59,5 +61,29 @@ public class Client {
         } else {
             throw new ServerVerifyException("Сервер не может подтвердить свою личность. Строка: " + serverVerificationResponce);
         }
+    }
+
+    public AuthencationResponse login(String login, String password) {
+        clientWriter.println(security.encrypt("LOG_ME_IN"));
+        clientWriter.println(security.encrypt(login));
+        clientWriter.println(security.encrypt(password));
+        clientWriter.flush();
+        try {
+            return AuthencationResponse.valueOf(security.decrypt(securedPrinter.readLine()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public ArrayList<String> clientsList() throws IOException {
+        ArrayList<String> clients = new ArrayList<String>();
+        clientWriter.println(security.encrypt(":clients"));
+        String clientsString = security.decrypt(securedPrinter.readLine());
+
+        for (String client : clientsString.split(" ")) {
+            clients.add(client);
+        }
+        return clients;
     }
 }
