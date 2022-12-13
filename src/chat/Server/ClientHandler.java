@@ -132,7 +132,6 @@ public class ClientHandler {
                 sendEncrypted(AuthencationResponse.INVALID_USERNAME.name());
             }
         } else if (decryptedTypeOfAuth.equals("REGISTER_ME")) {
-            // sendEncrypted(AuthencationResponse.REGISTER_PROCESS.name());
             String encryptedName = socketReader.readLine();
             String encryptedLastName = socketReader.readLine();
             String name = security.decrypt(encryptedName);
