@@ -19,7 +19,7 @@ public class RegistrationMenu extends JFrame implements ActionListener{
 
     public RegistrationMenu (Client client) {
         this.client = client;
-        setSize(320, 350);
+        setSize(320, 330);
         setResizable(false);
         setTitle("Регистрация");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -76,13 +76,13 @@ public class RegistrationMenu extends JFrame implements ActionListener{
         panel.add(numberLabel);
 
         numberField = new JTextField(32);
-        numberField.setBounds(100, 230, 165, 25);
+        numberField.setBounds(100, 190, 165, 25);
         panel.add(numberField);
 
         bRegistration = new JButton("Зарегистрироваться");
         bRegistration.setFocusPainted(false);
         bRegistration.addActionListener(this);
-        bRegistration.setBounds(100,230,155, 25);
+        bRegistration.setBounds(100,240,155, 25);
         bRegistration.setFont(new Font(null,Font.BOLD,11));
         panel.add(bRegistration);
 
