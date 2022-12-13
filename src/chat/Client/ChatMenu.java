@@ -1,6 +1,7 @@
 package chat.Client;
 
 import javax.swing.*;
+import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -61,6 +62,8 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
         JPanel centerPanel = new JPanel(new BorderLayout(10, 10));
         add(centerPanel, BorderLayout.CENTER);
         chatArea = new JTextArea();
+        DefaultCaret caret = (DefaultCaret)chatArea.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         chatArea.setEditable(false);
         chatArea.setLineWrap(true);
         centerPanel.add(new JScrollPane(chatArea), BorderLayout.CENTER);
