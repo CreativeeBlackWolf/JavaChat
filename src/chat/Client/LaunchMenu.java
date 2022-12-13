@@ -14,7 +14,7 @@ import java.io.IOException;
 public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
     private static JButton bLogin;
     private static JButton bRegistration;
-    private static JLabel successMessage;
+    private static JLabel failMessage;
     private static JPasswordField passwordField;
     private static JTextField loginField;
     private static JCheckBox showPass;
@@ -68,11 +68,11 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
         bRegistration.setBounds(172, 130, 110, 25);
         panel.add(bRegistration);
 
-        successMessage = new JLabel("");
-        successMessage.setFont(new Font(null, Font.BOLD, 12));
-        successMessage.setForeground(Color.RED);
-        successMessage.setBounds(100, 80, 300, 25);
-        panel.add(successMessage);
+        failMessage = new JLabel("");
+        failMessage.setFont(new Font(null, Font.BOLD, 12));
+        failMessage.setForeground(Color.RED);
+        failMessage.setBounds(100, 80, 300, 25);
+        panel.add(failMessage);
 
         showPass = new JCheckBox("Показать пароль");
         showPass.addActionListener(e -> {
@@ -106,12 +106,14 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
             String pass = new String(passwordField.getPassword());
             client.user.setUsername(login);
             AuthencationResponse authResponse = client.login(login, pass);
-            if(authResponse == AuthencationResponse.LOGIN_SUCCESS){
+            if (authResponse == AuthencationResponse.LOGIN_SUCCESS) {
                 new ChatMenu(client);
                 dispose();
+            } else if (authResponse == AuthencationResponse.ALREADY_LOGGED_IN) {
+                failMessage.setText("Аккаунт с таким именем уже в чате");
             }
             else {
-                successMessage.setText("Неверный пароль или логин");
+                failMessage.setText("Неверный пароль или логин");
             }
         }
 
@@ -127,15 +129,15 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
         if (e.getSource()==bLogin) {
             String login = loginField.getText();
             String pass = new String(passwordField.getPassword());
-                client.user.setUsername(login);
-                AuthencationResponse authResponse = client.login(login, pass);
-                if(authResponse == AuthencationResponse.LOGIN_SUCCESS){
-                    new ChatMenu(client);
-                    dispose();
-                }
-                else {
-                    successMessage.setText("Неверный пароль или логин");
-                }
+            client.user.setUsername(login);
+            AuthencationResponse authResponse = client.login(login, pass);
+            if(authResponse == AuthencationResponse.LOGIN_SUCCESS){
+                new ChatMenu(client);
+                dispose();
+            }
+            else {
+                failMessage.setText("Неверный пароль или логин");
+            }
         }
 
         if (e.getSource()==bRegistration) {

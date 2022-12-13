@@ -49,10 +49,13 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
         setJMenuBar(menuBar);
 
         JMenu menu = new JMenu("Меню");
+        menu.setFont(new Font("Segoe UI", Font.BOLD, 14));
         menuBar.add(menu);
 
         changeAccount = new JMenuItem("Сменить пользователя");
+        changeAccount.setFont(new Font("Segoe UI", Font.BOLD, 14));
         exit = new JMenuItem("Выйти");
+        exit.setFont(new Font("Segoe UI", Font.BOLD, 14));
         changeAccount.addActionListener(this);
         exit.addActionListener(this);
         menu.add(changeAccount);
@@ -62,6 +65,7 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
         JPanel centerPanel = new JPanel(new BorderLayout(10, 10));
         add(centerPanel, BorderLayout.CENTER);
         chatArea = new JTextArea();
+        chatArea.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         DefaultCaret caret = (DefaultCaret)chatArea.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         chatArea.setEditable(false);
@@ -77,6 +81,7 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
         rightCentralPanel.add(onlineUsersText, BorderLayout.NORTH);
 
         onlineUsersArea = new JTextArea();
+        onlineUsersArea.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         onlineUsersArea.setEditable(false);
         rightCentralPanel.add(new JScrollPane(onlineUsersArea), BorderLayout.CENTER);
 
@@ -92,12 +97,14 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
         bottomCentralPanel.setPreferredSize(new Dimension(50,50));
 
         sendMessageButton = new JButton("Отправить");
+        sendMessageButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
         sendMessageButton.setFocusPainted(false);
         sendMessageButton.setPreferredSize(new Dimension(150, 0));
         sendMessageButton.addActionListener(this);
         bottomCentralPanel.add(sendMessageButton, BorderLayout.EAST);
 
         messageArea = new JTextArea("Написать сообщение...");
+        messageArea.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         messageArea.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -133,7 +140,7 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
         add(topPanel, BorderLayout.NORTH);
 
         JLabel userNameLabel = new JLabel("Пользователь: " + client.user.getUsername());
-        userNameLabel.setFont(new Font("Times New Roman", Font.BOLD, 14));
+        userNameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         userNameLabel.setBounds(10,10,300,15);
         topPanel.add(userNameLabel);
 
@@ -148,6 +155,7 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
         if(e.getSource()==sendMessageButton && !(messageArea.getText().equals("Написать сообщение..."))){
             client.clientWriter.println(client.security.encrypt(messageArea.getText()));
             client.clientWriter.flush();
+            chatArea.append(client.user.getUsername() + ": " + messageArea.getText() + "\n");
             messageArea.selectAll();
             messageArea.replaceSelection(null);
             messageArea.setForeground(Color.gray);
