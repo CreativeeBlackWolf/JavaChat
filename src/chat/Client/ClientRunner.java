@@ -13,7 +13,7 @@ import chat.Shared.Utils.User;
 
 public class ClientRunner {
     public static void main(String[] args) throws UnknownHostException, IOException, ServerVerifyException {
-        Client client = new Client("saqriphnix.tk", 2727);
+        Client client = new Client("localhost", 2727);
         AuthencationResponse authResponse = null;
 
         do {

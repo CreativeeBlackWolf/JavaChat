@@ -22,7 +22,7 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
     
     public LaunchMenu() {
         try {
-            this.client = new Client("saqriphnix.tk", 2727);
+            this.client = new Client("localhost", 2727);
         } catch (IOException | ServerVerifyException e1) {
             e1.printStackTrace();
         }
@@ -114,6 +114,7 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
                 successMessage.setText("Неверный пароль или логин");
             }
         }
+
     }
 
     @Override
@@ -126,15 +127,15 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
         if (e.getSource()==bLogin) {
             String login = loginField.getText();
             String pass = passwordField.getText();
-            client.user.setUsername(login);
-            AuthencationResponse authResponse = client.login(login, pass);
-            if (authResponse == AuthencationResponse.LOGIN_SUCCESS) {
-                new ChatMenu(client);
-                dispose();
-            }
-            else {
-                successMessage.setText("Неверный пароль или логин");
-            }
+                client.user.setUsername(login);
+                AuthencationResponse authResponse = client.login(login, pass);
+                if(authResponse == AuthencationResponse.LOGIN_SUCCESS){
+                    new ChatMenu(client);
+                    dispose();
+                }
+                else {
+                    successMessage.setText("Неверный пароль или логин");
+                }
         }
 
         if (e.getSource()==bRegistration) {
