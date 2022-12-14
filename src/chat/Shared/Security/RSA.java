@@ -38,7 +38,7 @@ public class RSA {
      */
     public void generateKeyPair(int keysize) throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(1024);
+        keyPairGenerator.initialize(4096);
         KeyPair keypair = keyPairGenerator.generateKeyPair();
 
         this.privateKey = keypair.getPrivate();
@@ -71,39 +71,41 @@ public class RSA {
 
         } catch(NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException |
                 IllegalBlockSizeException | BadPaddingException e){
-            return e.getMessage();
+            e.printStackTrace();
+            return null;
         }
     }
 
     public String decrypt(String message) {
         try {
             Cipher cipher = Cipher.getInstance("RSA");
-                cipher.init(Cipher.DECRYPT_MODE, privateKey);
+            cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
-                byte[] messageBytes = Base64.getDecoder().decode(message);
-                byte[] decryptedMessage = cipher.doFinal(messageBytes);
+            byte[] messageBytes = Base64.getDecoder().decode(message);
+            byte[] decryptedMessage = cipher.doFinal(messageBytes);
 
-                return new String(decryptedMessage, StandardCharsets.UTF_8);
+            return new String(decryptedMessage, StandardCharsets.UTF_8);
 
         } catch(NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException |
-                    IllegalBlockSizeException | BadPaddingException e){
-                return e.getMessage();
+                IllegalBlockSizeException | BadPaddingException e){
+            e.printStackTrace();
+            return null;
         }
     }
 
     public String decrypt(String message, Key key) {
         try {
             Cipher cipher = Cipher.getInstance("RSA");
-                cipher.init(Cipher.DECRYPT_MODE, key);
+            cipher.init(Cipher.DECRYPT_MODE, key);
 
-                byte[] messageBytes = Base64.getDecoder().decode(message);
-                byte[] decryptedMessage = cipher.doFinal(messageBytes);
+            byte[] messageBytes = Base64.getDecoder().decode(message);
+            byte[] decryptedMessage = cipher.doFinal(messageBytes);
 
-                return new String(decryptedMessage, StandardCharsets.UTF_8);
+            return new String(decryptedMessage, StandardCharsets.UTF_8);
 
         } catch(NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException |
                 IllegalBlockSizeException | BadPaddingException e) {
-                return e.getMessage();
+            return e.getMessage();
         }
     }
 

@@ -1,17 +1,19 @@
 package chat.Server;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import chat.Shared.Database.UserDatabaseWorker;
 import chat.Shared.Security.RSA;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-
 public class Server {
-
+    private static final Logger logger = LoggerFactory.getLogger(Server.class);
     public static void main(String[] args) {
         final int PORT = 2727;
 
@@ -28,7 +30,7 @@ public class Server {
         RSA security = new RSA();
         UserDatabaseWorker userDB = new UserDatabaseWorker();
 
-        System.out.println("Server online!111");
+        logger.info("Server online.");
 
         while (chatServer != null) {
             try {
@@ -36,7 +38,7 @@ public class Server {
                 ClientHandlerRunnable handlerInit = new ClientHandlerRunnable(clientSocket, clients, security, userDB);
                 new Thread(handlerInit).start();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
     }

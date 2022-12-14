@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="ConsoleClientLogAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%d{dd.MM.yyyy | HH:mm:ss}] [%level] {%logger/%M} : %msg%n" charset="866"/>
+        </Console>
+        <File name="FileClientLogAppender" fileName="logs/client.log" append="true">
+            <PatternLayout pattern="[%d{dd.MM.yyyy | HH:mm:ss}] [%level] {%logger/%M} : %msg%n"/>
+        </File>
+        <Console name="ConsoleServerLogAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%d{dd.MM.yyyy | HH:mm:ss}] [%tn] [%level] {%logger/%M} - %msg%n" charset="866"/>
+        </Console>
+        <File name="FileServerLogAppender" fileName="logs/server.log" append="true">
+            <PatternLayout pattern="[%d{dd.MM.yyyy | HH:mm:ss}] [%tn] [%level] {%logger/%M} - %msg%n"/>
+        </File>
+    </Appenders>
+
+    <Loggers>
+		<!-- avoid duplicated logs with additivity=false -->
+        <Logger name="chat.Client" level="debug" additivity="false">
+            <AppenderRef ref="ConsoleClientLogAppender"/>
+            <AppenderRef ref="FileClientLogAppender"/>
+        </Logger>
+
+        <Logger name="chat.Server" level="trace" additivity="false">
+            <AppenderRef ref="ConsoleServerLogAppender"/>
+            <AppenderRef ref="FileServerLogAppender"/>
+        </Logger>
+
+        <Root level="error">
+            <AppenderRef ref="ConsoleClientLogAppender"/>
+        </Root>
+
+    </Loggers>
+
+</Configuration>

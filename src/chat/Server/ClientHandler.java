@@ -10,6 +10,9 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import chat.Shared.AuthencationResponse;
 import chat.Shared.DatabaseFields;
 import chat.Shared.ServerEvent;
@@ -31,6 +34,7 @@ public class ClientHandler {
     // не должен содержать иные символы, кроме латинского алфавита, чисел и "." "_"
     private static final Pattern NICKNAME_RULES = Pattern.compile("^(?=.{6,27}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$");
 
+    private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
     protected String username;
     private final PrintWriter socketWriter;
     private final BufferedReader socketReader;
@@ -59,6 +63,7 @@ public class ClientHandler {
      * Прослушивает в бесконечном цикле сокет для получения сообщений
      */
     public void startListening() {
+        logger.trace("Started listening a client, " + username + " | " + clientSocket.getInetAddress().toString());
         broadcast(ServerEvent.USER_JOINED.name());
         broadcast(username);
         sendClientsList();
@@ -94,16 +99,27 @@ public class ClientHandler {
                         sendEncrypted(ServerEvent.COMMAND_WROTE_WRONG.name());
                         sendEncrypted("Команда должна принимать аргумент statusMessage");
                     }
-                } 
+                }  else if (message.toLowerCase().startsWith(":help")) {
+                    sendHelp();
+                }
                 // Если не команда, то просто рассылаем сообщение всем.
                 else {
-                    broadcast(ServerEvent.MESSAGE_RECIEVED.name());
+                    broadcast(ServerEvent.MESSAGE_RECEIEVED.name());
                     broadcast(username + ": " + message);
                 }
             }
         } catch (Exception e) {
             disconnect();
         }
+    }
+
+    private void sendHelp() {
+        String message = ":help - display this message\n" +
+                         ":changestatus <status_message> - change your status message\n" +
+                         ":clients - get the list of clients\n" +
+                         ":userprofile <username> - get profile of some user";
+        sendEncrypted(ServerEvent.COMMAND_EXECUTED.name());
+        sendEncrypted(message);
     }
 
     /** Аутентифицирует или регистрирует пользователя
@@ -206,7 +222,7 @@ public class ClientHandler {
                                 profileStatusMessage,
                                 profilePhoneNumber,
                                 profileRegistrationDate);
-        sendEncrypted(ServerEvent.USER_PROFILE_RECIEVED.name());
+        sendEncrypted(ServerEvent.USER_PROFILE_RECEIEVED.name());
         sendEncrypted(message);
     }
 
@@ -233,7 +249,7 @@ public class ClientHandler {
         for (String username : clients.keySet()) {
             message += username + " ";
         }
-        sendEncrypted(ServerEvent.CLIENTS_LIST_RECIEVED.name());
+        sendEncrypted(ServerEvent.CLIENTS_LIST_RECEIEVED.name());
         sendEncrypted(message);
     }
 
@@ -243,6 +259,7 @@ public class ClientHandler {
      */
     private void disconnect() {
         clients.remove(username);
+        logger.trace("Client disconnected: " + username + " | " + clientSocket.getInetAddress().toString());
         broadcast(ServerEvent.USER_DISCONNECTED.name());
         broadcast(username);
     }
@@ -287,10 +304,12 @@ public class ClientHandler {
      * @throws IOException
      */
     private void exchangeKeys() throws IOException {
+        logger.debug("Начинаем обмен ключами с клиентом...");
         send(KeyConverter.keyToString(security.getPublicKey()));
         send(security.encrypt("лъягушка", security.getPrivateKey()));
         hell.setReceiverPublicKey((PublicKey) KeyConverter.stringToKey(socketReader.readLine(), "EC", false));
         send(KeyConverter.keyToString(hell.getPublickey()));
         send(hell.encrypt(KeyConverter.keyToString(security.getPrivateKey())));
+        logger.debug("Обмен ключами завершён!");
     }
 }

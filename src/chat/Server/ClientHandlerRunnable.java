@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import chat.Shared.Database.UserDatabaseWorker;
 import chat.Shared.Security.RSA;
 
 public class ClientHandlerRunnable implements Runnable {
-
+    private static final Logger logger = LoggerFactory.getLogger(ClientHandlerRunnable.class);
     private final Socket clientSocket;
     private final Map<String, ClientHandler> clients;
     private final RSA security;
@@ -28,7 +31,7 @@ public class ClientHandlerRunnable implements Runnable {
             clients.put(newClient.username, newClient);
             newClient.startListening();
         } catch (IOException e) {
-            System.err.println("Client disconnected unexpectedly.");
+            logger.warn("Client disconnected unexpectedly", e);
         }
     }
 }

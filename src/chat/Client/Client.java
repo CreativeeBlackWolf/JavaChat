@@ -6,6 +6,9 @@ import java.net.UnknownHostException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import chat.Shared.AuthencationResponse;
 import chat.Shared.UserConsoleReader;
 import chat.Shared.UserReader;
@@ -18,6 +21,7 @@ import chat.Shared.Utils.User;
 
 
 public class Client {
+    private static final Logger logger = LoggerFactory.getLogger(Client.class);
 
     public User user = new User();
     protected Socket clientSocket;
@@ -29,6 +33,7 @@ public class Client {
 
     public Client(String host, int port) throws UnknownHostException, IOException, ServerVerifyException {
         this.clientSocket = new Socket(host, port);
+        logger.info("Connected to server on host `" + host + "` and port `" + port + "`");
         this.clientWriter = new PrintWriter(clientSocket.getOutputStream());
         
         exchangeKeys();
@@ -42,6 +47,7 @@ public class Client {
      * @throws ServerVerifyException невозможно подтвердить личность сервера
      */
     public void exchangeKeys() throws IOException, ServerVerifyException {
+        logger.debug("Started key exchange with server.");
         ResponsePrinter exchangingPrinter = new ResponsePrinter(clientSocket);
         PublicKey serverPublicKey = (PublicKey) KeyConverter.stringToKey(exchangingPrinter.readLine(), "RSA", false);
         String serverVerificationResponce = security.decrypt(exchangingPrinter.readLine(), serverPublicKey);
@@ -57,6 +63,7 @@ public class Client {
             security.setPublicKey(serverPublicKey);
             security.setPrivateKey(serverPrivateKey);
             this.securedPrinter = new ResponsePrinter(clientSocket, security);
+            logger.debug("Finished key exchange with server.");
         } else {
             throw new ServerVerifyException("Сервер не может подтвердить свою личность. Строка: " + serverVerificationResponce);
         }
@@ -75,7 +82,7 @@ public class Client {
         try {
             return AuthencationResponse.valueOf(security.decrypt(securedPrinter.readLine()));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(password, e);
             return null;
         }
     }
