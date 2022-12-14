@@ -15,7 +15,7 @@ public class Number {
 
     public String setNumber(String number) throws InvalidPhoneNumberException {
         if(number.replaceAll("^((8|\\+7)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$", "").length() != 0){
-            throw new InvalidPhoneNumberException("Неправильный номер.");
+            throw new InvalidPhoneNumberException("Неправильный номер телефона.");
         }
 
         this.number = number;
