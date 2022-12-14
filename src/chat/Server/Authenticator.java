@@ -3,18 +3,21 @@ package chat.Server;
 import chat.Shared.DatabaseFields;
 import chat.Shared.Database.UserDatabaseWorker;
 import chat.Shared.Utils.User;
+import chat.Shared.Security.BCrypt;
 
 public class Authenticator {
     
     private final UserDatabaseWorker db;
+    private final BCrypt BCrypt;
 
     public Authenticator(UserDatabaseWorker db) {
         this.db = db;
+        this.BCrypt = new BCrypt();
     }
 
     public boolean authenticate(String decryptedPassword, String username) {
-        String password = db.getParam(DatabaseFields.password, username);
-        return password.equals(decryptedPassword);
+        String hashedPassword = db.getParam(DatabaseFields.password, username);
+        return BCrypt.compare(decryptedPassword, hashedPassword);
     }
 
     public String checkUnique(String username, String number) {
@@ -22,6 +25,7 @@ public class Authenticator {
     }
 
     public void registerUser(User user) {
+        user.setHashedPassword(user.getPassword());
         db.addUser(user);
     }
 

@@ -1,4 +1,4 @@
-package chat.Server;
+package chat.Shared.Security;
 
 import java.lang.Math;
 import java.math.BigInteger;
@@ -242,12 +242,22 @@ public class BCrypt {
         return hash(cost, saltBytes, password.getBytes());
     }
 
+    /** Генерирует хэш для пароля
+     * @param cost стоимость вычислений
+     * @param password исходная строка пароля
+     * @return возвращает хэшированную строку
+     */
     public String hash(int cost, String password) {
         byte[] salt = new byte[16];
         (new SecureRandom()).nextBytes(salt);
         return "$2a$" + cost + "$" + radix64encode(salt) + hash(cost, salt, password.getBytes());
     }
 
+    /** Сравнивает пароль и хэш пароля
+     * @param password строка пароля
+     * @param hash строка хэша
+     * @return {@code true} если пароль совпадает, {@code false} в противном случае.
+     */
     public boolean compare(String password, String hash) {
         String[] parts = hash.split("\\$");
         if (parts.length != 4) {
@@ -262,12 +272,12 @@ public class BCrypt {
         return hash2.equals(hash);
     }
 
-    //public static void main(String[] args) {
-    //    BCrypt bcrypt = new BCrypt();
-    //    int cost = 10;
-    //    String password = "123";
-    //    String hash = bcrypt.hash(cost, password);
-    //    System.out.println(hash);
-    //    System.out.println(bcrypt.compare(password, hash));
-    //}
+    public static void main(String[] args) {
+       BCrypt bcrypt = new BCrypt();
+       int cost = 10;
+       String password = "Kappapride27@";
+       String hash = bcrypt.hash(cost, password);
+       System.out.println(hash);
+       System.out.println(bcrypt.compare(password, hash));
+    }
 }
