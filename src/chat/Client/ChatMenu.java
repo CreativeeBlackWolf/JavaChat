@@ -42,7 +42,7 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
 
         setTitle(String.format("Java Chat [%s]", client.user.getUsername()));
         setLayout(new BorderLayout(10, 10));
-        setBounds(600, 300, 600, 500);
+        setBounds(600, 300, 800, 700);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
         ImageIcon image = new ImageIcon("src/icon.png");
@@ -200,11 +200,15 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
             dispose();
             new LaunchMenu();
         }
-        if(e.getSource()==changeStatus){
+        if(e.getSource()==changeStatus) {
             String status = JOptionPane.showInputDialog(null, "",
                     "Сменить статус", JOptionPane.INFORMATION_MESSAGE);
-            client.clientWriter.println(client.security.encrypt(":changestatus " + status));
-            client.clientWriter.flush();
+            if(status != null) {
+                if(status.length() != 0) {
+                    client.clientWriter.println(client.security.encrypt(":changestatus " + status));
+                    client.clientWriter.flush();
+                }
+            }
         }
     }
 
