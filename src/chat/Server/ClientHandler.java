@@ -55,6 +55,9 @@ public class ClientHandler {
         do { this.username = authenticateUser(); } while (username == null);
     }
 
+    /**
+     * Прослушивает в бесконечном цикле сокет для получения сообщений
+     */
     public void startListening() {
         broadcast(ServerEvent.USER_JOINED.name());
         broadcast(username);
@@ -70,6 +73,7 @@ public class ClientHandler {
                 String message = security.decrypt(clientData);
                 int messageArgsLength = message.split(" ").length;
                 
+                // Команды
                 if (message.startsWith(":clients")) {
                     sendClientsList();
                 } else if (message.toLowerCase().startsWith(":userprofile")) {
@@ -90,7 +94,9 @@ public class ClientHandler {
                         sendEncrypted(ServerEvent.COMMAND_WROTE_WRONG.name());
                         sendEncrypted("Команда должна принимать аргумент statusMessage");
                     }
-                } else {
+                } 
+                // Если не команда, то просто рассылаем сообщение всем.
+                else {
                     broadcast(ServerEvent.MESSAGE_RECIEVED.name());
                     broadcast(username + ": " + message);
                 }
@@ -100,6 +106,10 @@ public class ClientHandler {
         }
     }
 
+    /** Аутентифицирует или регистрирует пользователя
+     * @return Имя аутентифицированного пользователя
+     * @throws IOException
+     */
     private String authenticateUser() throws IOException {
         String encryptedTypeOfAuth = socketReader.readLine();
         String decryptedTypeOfAuth = security.decrypt(encryptedTypeOfAuth);
@@ -168,6 +178,10 @@ public class ClientHandler {
         return null;
     }
 
+    /** Отправляет клиенту информацию о профиле в формате
+     * {@code <имя_пользователя> | <имя> | <фамилия> | <статус> | <номер_телефона> | <дата_регистрации>}
+     * @param username имя пользователя, информацию о котором необходимо получить
+     */
     private void sendProfileInfo(String username) {
         String message;
         if (!userDB.userExists(username)) {
@@ -175,21 +189,29 @@ public class ClientHandler {
             sendEncrypted("Профиль с именем пользователя `" + username + "` не найден.");
             return;
         }
+
         String profileUsername = userDB.getParam(DatabaseFields.username, username);
         String profileName = userDB.getParam(DatabaseFields.name, username);
         String profileLastName = userDB.getParam(DatabaseFields.last_name, username);
         String profileStatusMessage = userDB.getParam(DatabaseFields.status_message, username);
         String profilePhoneNumber = userDB.getParam(DatabaseFields.phone_number, username);
-        message = String.format("%s | %s | %s | %s | %s", 
+        String profileRegistrationDate = userDB.getParam(DatabaseFields.date_registered, username);
+        message = String.format("%s | %s | %s | %s | %s | %s", 
                                 profileUsername,
                                 profileName,
                                 profileLastName,
                                 profileStatusMessage,
-                                profilePhoneNumber);
+                                profilePhoneNumber,
+                                profileRegistrationDate);
         sendEncrypted(ServerEvent.USER_PROFILE_RECIEVED.name());
         sendEncrypted(message);
     }
 
+    /** Меняет статус клиента в БД.
+     * Отправляет клиенту {@code ServerEvent.COMMAND_EXECUTED}, если команда была выполнена успешно,
+     * или {@code ServerEvent.SERVER_ERROR}, если произошла ошибка при обработке команды.
+     * @param statusMessage
+     */
     private void changeStatusMessage(String statusMessage) {
         if (userDB.setParam(DatabaseFields.status_message, username, statusMessage)) {
             sendEncrypted(ServerEvent.COMMAND_EXECUTED.name());
@@ -200,6 +222,9 @@ public class ClientHandler {
         }
     }
 
+    /**
+     * Отправляет клиенту {@code ServerEvent.CLIENTS_LIST_RECIEVED} и список подключённых клиентов
+     */
     private void sendClientsList() {
         String message = "";
         for (String username : clients.keySet()) {
@@ -209,12 +234,20 @@ public class ClientHandler {
         sendEncrypted(message);
     }
 
+    /**
+     * Исключает пользователя из списка подключённых клиентов,
+     * а также рассылает остальным клиентам {@code ServerEvent.USER_DISCONNECTED}
+     */
     private void disconnect() {
         clients.remove(username);
         broadcast(ServerEvent.USER_DISCONNECTED.name());
         broadcast(username);
     }
 
+    /** Распространяет зашифрованное сообщение по всем подключённым клиентам,
+     * кроме клиента-отправителя
+     * @param message сообщение (невероятно)
+     */
     private void broadcast(String message) {
         for (ClientHandler clientHandler : clients.values()) {
             if (clientHandler != this) {
@@ -223,6 +256,9 @@ public class ClientHandler {
         }
     }
 
+    /** Отправляет сообщение без применения шифрования
+     * @param data строка, которую требуется отправить 
+     */
     private void send(String data) {
         try {
             socketWriter.println(data);
@@ -232,6 +268,9 @@ public class ClientHandler {
         }
     }
 
+    /** Отправляет зашифрованное сообщение
+     * @param data строка, которую требуется отправить 
+     */
     protected void sendEncrypted(String data) {
         try {
             socketWriter.println(security.encrypt(data));
@@ -241,6 +280,9 @@ public class ClientHandler {
         }
     }
 
+    /** Обменивается ключами с клиентом. Необходимо для всех последующих действий.
+     * @throws IOException
+     */
     private void exchangeKeys() throws IOException {
         send(KeyConverter.keyToString(security.getPublicKey()));
         send(security.encrypt("лъягушка", security.getPrivateKey()));

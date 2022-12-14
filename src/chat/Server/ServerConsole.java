@@ -3,6 +3,7 @@ package chat.Server;
 import java.io.IOException;
 import java.util.Map;
 
+import chat.Shared.ServerEvent;
 import chat.Shared.UserConsoleReader;
 import chat.Shared.UserReader;
 import chat.Shared.UserSystemInReader;
@@ -48,12 +49,13 @@ public class ServerConsole implements Runnable {
         System.out.println("Users online: " + clients.size());
         System.out.println("Users list:");
         for (String username : clients.keySet()) {
-            System.out.println("\t" + username);
+            System.out.println("\t" + username + "\n");
         }
     }
 
     private void broadcast(String message) {
         for (ClientHandler clientHandler : clients.values()) {
+            clientHandler.sendEncrypted(ServerEvent.MESSAGE_RECIEVED.name());
             clientHandler.sendEncrypted("SERVER: " + message);
         }
     }

@@ -1,12 +1,22 @@
 package chat.Client;
 
-import javax.swing.*;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 import chat.Shared.AuthencationResponse;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.io.IOException;
 
 public class RegistrationMenu extends JFrame implements ActionListener{
     private static JTextField userNameField;
