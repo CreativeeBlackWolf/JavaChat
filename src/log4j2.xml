@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="LogToConsole" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%d{dd.MM.yyyy | HH:mm:ss}] [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+		<!-- avoid duplicated logs with additivity=false -->
+        <Logger name="src.chat.Client" level="debug" additivity="false">
+            <AppenderRef ref="LogToConsole"/>
+        </Logger>
+
+        <Root level="error">
+            <AppenderRef ref="LogToConsole"/>
+        </Root>
+
+    </Loggers>
+
+</Configuration>

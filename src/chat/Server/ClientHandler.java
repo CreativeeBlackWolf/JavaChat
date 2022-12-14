@@ -10,6 +10,9 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import chat.Shared.AuthencationResponse;
 import chat.Shared.DatabaseFields;
 import chat.Shared.ServerEvent;
@@ -31,6 +34,7 @@ public class ClientHandler {
     // не должен содержать иные символы, кроме латинского алфавита, чисел и "." "_"
     private static final Pattern NICKNAME_RULES = Pattern.compile("^(?=.{6,27}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$");
 
+    private final Logger logger = LogManager.getLogger(this.getClass());
     protected String username;
     private final PrintWriter socketWriter;
     private final BufferedReader socketReader;
@@ -284,10 +288,12 @@ public class ClientHandler {
      * @throws IOException
      */
     private void exchangeKeys() throws IOException {
+        logger.debug("Начинаем обмен ключами с клиентом...");
         send(KeyConverter.keyToString(security.getPublicKey()));
         send(security.encrypt("лъягушка", security.getPrivateKey()));
         hell.setReceiverPublicKey((PublicKey) KeyConverter.stringToKey(socketReader.readLine(), "EC", false));
         send(KeyConverter.keyToString(hell.getPublickey()));
         send(hell.encrypt(KeyConverter.keyToString(security.getPrivateKey())));
+        logger.debug("Обмен ключами завершён!");
     }
 }
