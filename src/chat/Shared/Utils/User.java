@@ -4,6 +4,7 @@ import java.util.regex.Pattern;
 
 import chat.Shared.Exceptions.InvalidNameException;
 import chat.Shared.Exceptions.InvalidPasswordException;
+import chat.Shared.Security.BCrypt;
 
 public class User {
     private String name;
@@ -66,7 +67,7 @@ public class User {
     }
 
     public String setPassword(String password) throws InvalidPasswordException {
-        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
+        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|\\])(?=\\S+$).{8,}$";
         Pattern p = Pattern.compile(regex);
 
         if (password.isBlank()) {
@@ -82,6 +83,11 @@ public class User {
         }
         this.password = password;
         return password;
+    }
+
+    public void setHashedPassword(String password) {
+        BCrypt crypto = new BCrypt();
+        this.password = crypto.hash(10, password);
     }
 
     public void setUsername(String username) {
