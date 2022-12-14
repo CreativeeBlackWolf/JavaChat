@@ -4,18 +4,19 @@ import chat.Shared.Exceptions.InvalidNameException;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 
-import chat.Shared.Utils.Number;
-import chat.Shared.Utils.User;
+import chat.Shared.Utils.PhoneNumber;
+import chat.Shared.Utils.DefaultUser;
 import chat.Shared.Exceptions.InvalidPasswordException;
 import chat.Shared.Exceptions.InvalidPhoneNumberException;
 
 import static org.junit.Assert.*;
 
+// TODO Fix tests
 public class Tests {
     @Test
     @DisplayName("Проверка валидации неправильных паролей")
     public void invalidPasswordValidationTest(){
-        User user = new User();
+        DefaultUser user = new DefaultUser();
 
         String[] wrongPasswords = {"q1w2e3r4t5y6", "Ad123456.", "Qwerty123456@"};
         
@@ -27,7 +28,7 @@ public class Tests {
     @Test
     @DisplayName("Проверка валидации правильных паролей")
     public void validPasswordValidationTest() throws InvalidPasswordException {
-        User user = new User();
+        DefaultUser user = new DefaultUser();
 
         String[] validPasswords = {"wqjdJDK21#dja", "zhOpa12@12", "jdkKDHMDKI123&dmamdn"};
         
@@ -39,7 +40,7 @@ public class Tests {
     @Test
     @DisplayName("Проверка валидации неправильного номера телефона")
     public void invalidPhoneNumberValidationTest() {
-        Number number = new Number();
+        PhoneNumber number = new PhoneNumber();
 
         String[] invalidNumbers = {"8", "    +da", "chakwdjawffnf", "8)953)))347))09))22)"};
 
@@ -51,7 +52,7 @@ public class Tests {
     @Test
     @DisplayName("Проверка валидации правильного номера телефона")
     public void validPhoneNumberValidationTest() throws InvalidPhoneNumberException {
-        Number number = new Number();
+        PhoneNumber number = new PhoneNumber();
 
         String[] validNumbers = {"89533470922", "+79171180241", "+7 (905) 093-61-93"};
 
@@ -63,7 +64,7 @@ public class Tests {
     @Test
     @DisplayName("Проверка валидации неправильного имени пользователя")
     public void invalidNameValidationTest() {
-        User user = new User();
+        DefaultUser user = new DefaultUser();
 
         String[] invalidNames = {"Григорий228", "", "   "};
 
@@ -75,7 +76,7 @@ public class Tests {
     @Test
     @DisplayName("Проверка валидации правильного имени пользователя")
     public void validNameValidationTest() throws InvalidNameException {
-        User user = new User();
+        DefaultUser user = new DefaultUser();
 
         String[] validNames = {"Алексей", "Потап", "Donald"};
 

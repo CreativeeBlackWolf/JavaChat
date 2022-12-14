@@ -1,33 +1,29 @@
-package chat.Shared.Utils;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+package chat.Shared.Utils.ABC;
 
 import chat.Shared.Exceptions.InvalidNameException;
 import chat.Shared.Exceptions.InvalidPasswordException;
-import chat.Shared.Security.BCrypt;
+import chat.Shared.Utils.PhoneNumber;
 
-public class User {
-    private String name;
-    private String lastName;
-    private String statusMessage;
-    private String password;
-    private String username;
-
-    public Number number;
-
+public abstract class User {
+    public String name;
+    public String lastName;
+    public String statusMessage;
+    public String password;
+    public String username;
+    public PhoneNumber number;
 
     public User(String username,
                 String name,
                 String lastName,
                 String statusMessage,
                 String password,
-                Number number) throws InvalidNameException, InvalidPasswordException {
+                PhoneNumber number) throws InvalidNameException, InvalidPasswordException {
         this.username = username;
-        this.password = setPassword(password);
         this.number = number;
-        this.name = setName(name);
-        this.lastName = setLastName(lastName);
-        this.statusMessage = setStatusMessage(statusMessage);
+        setName(name);
+        setLastName(lastName);
+        setStatusMessage(statusMessage);
+        setPassword(password);
     }
 
     public User() {
@@ -66,33 +62,7 @@ public class User {
         return statusMessage;
     }
 
-    public String setPassword(String password) throws InvalidPasswordException {
-        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
-        Pattern p = Pattern.compile(regex);
-
-        if (password.isBlank()) {
-            throw new InvalidPasswordException("Пароль ОБЯЗАН НАХУЙ НЕ быть пустым.");
-        }
-
-        Matcher m = p.matcher(password);
-
-        if (!(m.matches())) {
-            throw new InvalidPasswordException("Пароль ОБЯЗАН НАХУЙ иметь как минимум ОДИН уникальный символ, " +
-                                                "иметь как минимум один символ в верхнем и нижнем регистре и одну цифру, " +
-                                                "а также быть от 8 до 32 символов.");
-        }
-        this.password = password;
-        return password;
-    }
-
-    public void setHashedPassword(String password) {
-        BCrypt crypto = new BCrypt();
-        this.password = crypto.hash(10, password);
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    abstract public String setPassword(String password) throws InvalidPasswordException;
 
     public String getName() {
         return name;
@@ -112,5 +82,17 @@ public class User {
 
     public String getUsername() {
         return username;
+    }
+
+    public PhoneNumber getNumber() {
+        return number;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setNumber(PhoneNumber number) {
+        this.number = number;
     }
 }

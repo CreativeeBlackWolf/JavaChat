@@ -23,8 +23,8 @@ import chat.Shared.Exceptions.InvalidPhoneNumberException;
 import chat.Shared.Security.DH;
 import chat.Shared.Security.RSA;
 import chat.Shared.Utils.KeyConverter;
-import chat.Shared.Utils.Number;
-import chat.Shared.Utils.User;
+import chat.Shared.Utils.PhoneNumber;
+import chat.Shared.Utils.SecuredUser;
 
 public class ClientHandler {
     // Никнейм должен быть:
@@ -165,12 +165,12 @@ public class ClientHandler {
             
             try {
                 String encryptedNumber = socketReader.readLine();
-                Number number = new Number(security.decrypt(encryptedNumber));
+                PhoneNumber number = new PhoneNumber(security.decrypt(encryptedNumber));
                 String check = auth.checkUnique(decryptedUsername, number.convertToStandard());
                 if (!check.equals("CHECK_SUCCESSFULL")) {
                     sendEncrypted(AuthencationResponse.valueOf(check).name());
                 } else {
-                    User user = new User(decryptedUsername, 
+                    SecuredUser user = new SecuredUser(decryptedUsername, 
                                         name, 
                                         lastName, 
                                         "Ayo, i'm new there!", 

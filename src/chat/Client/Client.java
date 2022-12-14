@@ -17,13 +17,13 @@ import chat.Shared.Exceptions.ServerVerifyException;
 import chat.Shared.Security.DH;
 import chat.Shared.Security.RSA;
 import chat.Shared.Utils.KeyConverter;
-import chat.Shared.Utils.User;
+import chat.Shared.Utils.DefaultUser;
 
 
 public class Client {
     private static final Logger logger = LoggerFactory.getLogger(Client.class);
 
-    public User user = new User();
+    public DefaultUser user = new DefaultUser();
     protected Socket clientSocket;
     private DH hell = new DH();
     protected PrintWriter clientWriter;
