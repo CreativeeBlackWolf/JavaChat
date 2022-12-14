@@ -6,7 +6,6 @@ public enum AuthencationResponse {
     REGISTERED,
     INVALID_USERNAME,
     INVALID_PASSWORD,
-    REGISTER_PROCESS,
     USERNAME_EXISTS,
     PHONE_NUMBER_EXISTS
 }
