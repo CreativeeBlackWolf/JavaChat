@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import chat.Shared.DatabaseFields;
-import chat.Shared.Utils.User;
+import chat.Shared.Utils.ABC.User;
 
 public class UserDatabaseWorker {
     private static DatabaseWorker worker;
@@ -24,7 +24,9 @@ public class UserDatabaseWorker {
         }
     }
 
-    
+    /** 
+     * Создаёт таблицу Users, если её всё ещё нет в базе данных
+     */
     public void initializeUsersDatabase() {
         try (Statement stmt = connection.createStatement()) {
             if (worker.tableExists("Users")) {

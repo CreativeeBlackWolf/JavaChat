@@ -275,9 +275,10 @@ public class BCrypt {
     public static void main(String[] args) {
        BCrypt bcrypt = new BCrypt();
        int cost = 10;
-       String password = "Kappapride27@";
+       String password = "ou34h78y78ry3098ty347y1024u902u3498472y@98!!!32y8ASUHDW&Y38cwy9t9pwg9w988989899__!@198fue98u3722asdsewfijerogj";
        String hash = bcrypt.hash(cost, password);
        System.out.println(hash);
        System.out.println(bcrypt.compare(password, hash));
+       // $2a$10$bezg5cZluFcFjHdDUfG02.6CAwYEqiIIFx4VQmR2.1u2n7AyVMdNMz
     }
 }

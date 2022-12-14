@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 import chat.Shared.AuthencationResponse;
-import chat.Shared.Utils.Number;
+import chat.Shared.Utils.PhoneNumber;
 import chat.Shared.Exceptions.InvalidNameException;
 import chat.Shared.Exceptions.InvalidPasswordException;
 import chat.Shared.Exceptions.InvalidPhoneNumberException;
 import chat.Shared.Exceptions.ServerVerifyException;
-import chat.Shared.Utils.User;
+import chat.Shared.Utils.DefaultUser;
 
 public class ClientRunner {
     public static void main(String[] args) throws UnknownHostException, IOException, ServerVerifyException {
@@ -28,7 +28,7 @@ public class ClientRunner {
             } else {
                 continue;
             }
-            client.user = new User(); 
+            client.user = new DefaultUser(); 
             System.out.print("Введите имя пользователя: ");
             client.user.setUsername(client.consoleReader.readLine());
             while (client.user.getPassword() == null) {
@@ -47,7 +47,7 @@ public class ClientRunner {
             if (answer == 2) {
                 do {
                     try {
-                        client.user.number = new Number();
+                        client.user.number = new PhoneNumber();
                         System.out.print("Введите своё имя: ");
                         client.user.setName(client.consoleReader.readLine());
                         System.out.print("Введите свою фамилию: ");

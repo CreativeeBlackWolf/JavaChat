@@ -2,14 +2,14 @@ package chat.Shared.Utils;
 import chat.Shared.Exceptions.InvalidPhoneNumberException;
 
 
-public class Number {
+public class PhoneNumber {
     private String number;
 
-    public Number(String number) throws InvalidPhoneNumberException {
+    public PhoneNumber(String number) throws InvalidPhoneNumberException {
         this.number = setNumber(number);
     }
 
-    public Number() {
+    public PhoneNumber() {
         
     }
 
