@@ -101,18 +101,30 @@ public class UserDatabaseWorker {
         }
     }
 
-    public String checkUnique(String number) {
-        // String statement = "SELECT * FROM Users WHERE username = ?";
+    public boolean setParam(DatabaseFields field, String username, String parameterToSet) {
+        String statement = "UPDATE Users SET " + field.name() + "=? WHERE username = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+            stmt.setString(1, parameterToSet);
+            stmt.setString(2, username);
+            return stmt.executeUpdate() >= 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-        // try (PreparedStatement stmt = connection.prepareStatement(statement)) {
-        //     stmt.setString(1, username);
-        //     ResultSet result = stmt.executeQuery();
-        //     if (result.next()) return "USERNAME_EXISTS";
-        // } catch (SQLException e) {
-        //     e.printStackTrace();
-        //     return null;
-        // }
-        String statement;
+    public String checkUnique(String username, String number) {
+        String statement = "SELECT * FROM Users WHERE username = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+            stmt.setString(1, username);
+            ResultSet result = stmt.executeQuery();
+            if (result.next()) return "USERNAME_EXISTS";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
         statement = "SELECT * FROM Users WHERE phone_number = ?";
         try (PreparedStatement stmt = connection.prepareStatement(statement)) {
             stmt.setString(1, number);
@@ -122,6 +134,14 @@ public class UserDatabaseWorker {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public void close() {
+        try {
+            worker.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

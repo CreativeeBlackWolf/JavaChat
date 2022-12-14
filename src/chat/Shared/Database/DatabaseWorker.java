@@ -11,7 +11,6 @@ import chat.Shared.Exceptions.ConnectionNotClosedException;
 
 public class DatabaseWorker {
     private static Connection connection;
-    
 
     public DatabaseWorker(String dbPath) throws SQLException, ConnectionNotClosedException {
         connect(dbPath);
@@ -29,6 +28,11 @@ public class DatabaseWorker {
         return connection.isValid(0);
     }
 
+    /** Проверяет, существует ли таблица в базе.
+     * @param tableName имя таблицы
+     * @return {@code true} если таблица существует, {@code false}, если нет
+     * @throws SQLException
+     */
     public boolean tableExists(String tableName) throws SQLException {
         DatabaseMetaData meta = connection.getMetaData();
         ResultSet result = meta.getTables(null, null, tableName, new String[] {"TABLE"});
