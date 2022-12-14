@@ -34,6 +34,7 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
     private static JButton sendMessageButton;
     private static JMenuItem exit;
     private static JMenuItem changeAccount;
+    private static JMenuItem changeStatus;
     private Client client;
 
     public ChatMenu(Client client){
@@ -77,8 +78,12 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
         changeAccount.setFont(new Font("Segoe UI", Font.BOLD, 14));
         exit = new JMenuItem("Выйти");
         exit.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        changeStatus = new JMenuItem("Сменить статус");
+        changeStatus.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        changeStatus.addActionListener(this);
         changeAccount.addActionListener(this);
         exit.addActionListener(this);
+        menu.add(changeStatus);
         menu.add(changeAccount);
         menu.add(exit);
 
@@ -187,8 +192,19 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
             System.exit(0);
         }
         if(e.getSource()==changeAccount){
+            try {
+                client.clientSocket.close();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             dispose();
             new LaunchMenu();
+        }
+        if(e.getSource()==changeStatus){
+            String status = JOptionPane.showInputDialog(null, "",
+                    "Сменить статус", JOptionPane.INFORMATION_MESSAGE);
+            client.clientWriter.println(client.security.encrypt(":changestatus " + status));
+            client.clientWriter.flush();
         }
     }
 
