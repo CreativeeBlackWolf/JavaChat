@@ -43,9 +43,12 @@ public class DH {
         }
     }
 
-    public void setReceiverPublicKey(PublicKey publickey) {
+    /** Генерирует и моментально применяет секретный ключ.
+     * @param publicKey публичный ключ, полученный от второй стороны
+     */
+    public void setReceiverPublicKey(PublicKey publicKey) {
         try {
-            keyAgreement.doPhase(publickey, true);
+            keyAgreement.doPhase(publicKey, true);
             sharedsecret = keyAgreement.generateSecret();
         } catch (InvalidKeyException e) {
             e.printStackTrace();
