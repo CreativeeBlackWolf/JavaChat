@@ -216,7 +216,7 @@ public class BCrypt {
         return result;
     }
 
-    public String hash(int cost, byte[] salt, byte[] password) {
+    private String hash(int cost, byte[] salt, byte[] password) {
         Blowfish bf = new Blowfish(cost, salt, password);
         byte[][] blocks = {
             "OrpheanB".getBytes(),
@@ -237,12 +237,12 @@ public class BCrypt {
         return radix64encode(result);
     }
 
-    public String hash(int cost, String salt, String password) {
+    private String hash(int cost, String salt, String password) {
         byte[] saltBytes = radix64decode(salt);
         return hash(cost, saltBytes, password.getBytes());
     }
 
-    public String fullHash(int cost, String password) {
+    public String hash(int cost, String password) {
         byte[] salt = new byte[16];
         (new SecureRandom()).nextBytes(salt);
         return "$2a$" + cost + "$" + radix64encode(salt) + hash(cost, salt, password.getBytes());
@@ -266,7 +266,7 @@ public class BCrypt {
     //    BCrypt bcrypt = new BCrypt();
     //    int cost = 10;
     //    String password = "123";
-    //    String hash = bcrypt.fullHash(cost, password);
+    //    String hash = bcrypt.hash(cost, password);
     //    System.out.println(hash);
     //    System.out.println(bcrypt.compare(password, hash));
     //}
