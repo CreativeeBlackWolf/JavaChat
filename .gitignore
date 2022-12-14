@@ -1,3 +1,7 @@
 *.txt
 **/.vscode
 *.db
+**/Test.java
+**/*.iml
+**/.idea
+**/out
