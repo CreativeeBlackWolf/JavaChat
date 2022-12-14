@@ -5,12 +5,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.swing.JTextArea;
 
 import chat.Shared.ServerEvent;
 import chat.Shared.Security.RSA;
 
 public class ResponsePrinter implements Runnable {
+    private static final Logger logger = LoggerFactory.getLogger(ResponsePrinter.class);
     private BufferedReader socketReader;
     private RSA security;
     private JTextArea chatArea;
@@ -35,11 +39,12 @@ public class ResponsePrinter implements Runnable {
     @Override
     public void run() {
         try {
+            logger.info("Started ResponsePrinter thread. Listening for messages...");
             while (true) {
                 String encryptedEvent = socketReader.readLine();
 
                 if (encryptedEvent == null) {
-                    System.err.println("Server disconnected :(");
+                    logger.info("Server disconnected :(");
                     System.exit(0);
                 }
 
@@ -50,9 +55,9 @@ public class ResponsePrinter implements Runnable {
                     if (serverEvent == ServerEvent.USER_JOINED) {
                         onlineUsersArea.append(line + "\n");
                         chatArea.append("SERVER: " + line + " has joined chatroom!\n");
-                    } else if (serverEvent == ServerEvent.MESSAGE_RECIEVED) {
+                    } else if (serverEvent == ServerEvent.MESSAGE_RECEIEVED) {
                         chatArea.append(line + "\n");
-                    } else if (serverEvent == ServerEvent.CLIENTS_LIST_RECIEVED) {
+                    } else if (serverEvent == ServerEvent.CLIENTS_LIST_RECEIEVED) {
                         onlineUsersArea.selectAll();
                         onlineUsersArea.replaceSelection(null);
                         for (String client : line.split(" ")) {
@@ -62,6 +67,7 @@ public class ResponsePrinter implements Runnable {
                     } else if (serverEvent == ServerEvent.USER_DISCONNECTED) {
                         chatArea.append("SERVER: " + line + " has disconnected.\n");
                     } else {
+                        logger.warn("Got unhandled server event: " + serverEvent.name());
                         chatArea.append(event + " -- " + line + "\n");
                     }
                 }
@@ -72,7 +78,7 @@ public class ResponsePrinter implements Runnable {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
