@@ -94,6 +94,22 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
         setVisible(true);
     }
 
+    public void enter(){
+        String login = loginField.getText();
+        String pass = new String(passwordField.getPassword());
+        client.user.setUsername(login);
+        AuthencationResponse authResponse = client.login(login, pass);
+        if (authResponse == AuthencationResponse.LOGIN_SUCCESS) {
+            new ChatMenu(client);
+            dispose();
+        } else if (authResponse == AuthencationResponse.ALREADY_LOGGED_IN) {
+            failMessage.setText("Аккаунт с таким именем уже в чате");
+        }
+        else {
+            failMessage.setText("Неверный пароль или логин");
+        }
+    }
+
     @Override
     public void keyTyped(KeyEvent e) {
 
@@ -102,19 +118,7 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode()==10) {
-            String login = loginField.getText();
-            String pass = new String(passwordField.getPassword());
-            client.user.setUsername(login);
-            AuthencationResponse authResponse = client.login(login, pass);
-            if (authResponse == AuthencationResponse.LOGIN_SUCCESS) {
-                new ChatMenu(client);
-                dispose();
-            } else if (authResponse == AuthencationResponse.ALREADY_LOGGED_IN) {
-                failMessage.setText("Аккаунт с таким именем уже в чате");
-            }
-            else {
-                failMessage.setText("Неверный пароль или логин");
-            }
+            enter();
         }
 
     }
@@ -127,17 +131,7 @@ public class LaunchMenu extends JFrame implements KeyListener, ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource()==bLogin) {
-            String login = loginField.getText();
-            String pass = new String(passwordField.getPassword());
-            client.user.setUsername(login);
-            AuthencationResponse authResponse = client.login(login, pass);
-            if(authResponse == AuthencationResponse.LOGIN_SUCCESS){
-                new ChatMenu(client);
-                dispose();
-            }
-            else {
-                failMessage.setText("Неверный пароль или логин");
-            }
+            enter();
         }
 
         if (e.getSource()==bRegistration) {

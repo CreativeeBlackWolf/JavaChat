@@ -66,8 +66,10 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
         add(centerPanel, BorderLayout.CENTER);
         chatArea = new JTextArea();
         chatArea.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+
         DefaultCaret caret = (DefaultCaret)chatArea.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+
         chatArea.setEditable(false);
         chatArea.setLineWrap(true);
         centerPanel.add(new JScrollPane(chatArea), BorderLayout.CENTER);
@@ -77,12 +79,13 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
         centerPanel.add(rightCentralPanel, BorderLayout.EAST);
         
         JLabel onlineUsersText = new JLabel("Участники");
+        onlineUsersText.setFont(new Font("Segoe UI", Font.BOLD, 15));
         onlineUsersText.setHorizontalAlignment(JLabel.CENTER);
         rightCentralPanel.add(onlineUsersText, BorderLayout.NORTH);
 
         onlineUsersArea = new JTextArea();
         onlineUsersArea.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        onlineUsersArea.setEditable(false);
+        onlineUsersArea.setEditable(true);
         rightCentralPanel.add(new JScrollPane(onlineUsersArea), BorderLayout.CENTER);
 
         try {
@@ -109,11 +112,7 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
             @Override
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode()==10 && !(messageArea.getText().isBlank())){
-                    client.clientWriter.println(client.security.encrypt(messageArea.getText()));
-                    client.clientWriter.flush();
-                    chatArea.append(client.user.getUsername() + ": " + messageArea.getText() + "\n");
-                    messageArea.selectAll();
-                    messageArea.replaceSelection(null);
+                    sendMessage();
                 }
             }
 
@@ -141,7 +140,7 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
 
         JLabel userNameLabel = new JLabel("Пользователь: " + client.user.getUsername());
         userNameLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        userNameLabel.setBounds(10,10,300,15);
+        userNameLabel.setBounds(10,5,300,20);
         topPanel.add(userNameLabel);
 
         setLocationRelativeTo(null);
@@ -150,16 +149,18 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
 
     }
 
+    public void sendMessage(){
+        client.clientWriter.println(client.security.encrypt(messageArea.getText()));
+        client.clientWriter.flush();
+        chatArea.append(client.user.getUsername() + ": " + messageArea.getText() + "\n");
+        messageArea.selectAll();
+        messageArea.replaceSelection(null);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()==sendMessageButton && !(messageArea.getText().equals("Написать сообщение..."))){
-            client.clientWriter.println(client.security.encrypt(messageArea.getText()));
-            client.clientWriter.flush();
-            chatArea.append(client.user.getUsername() + ": " + messageArea.getText() + "\n");
-            messageArea.selectAll();
-            messageArea.replaceSelection(null);
-            messageArea.setForeground(Color.gray);
-            messageArea.setText("Написать сообщение...");
+            sendMessage();
         }
         if(e.getSource()==exit){
             System.exit(0);
@@ -172,8 +173,10 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
 
     @Override
     public void focusGained(FocusEvent e) {
-        messageArea.setText("");
-        messageArea.setForeground(Color.black);
+        if(messageArea.getText().equals("Написать сообщение...")){
+            messageArea.setText("");
+            messageArea.setForeground(Color.black);
+        }
     }
 
     @Override
