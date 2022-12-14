@@ -168,12 +168,15 @@ public class ClientHandler {
                     sendEncrypted(AuthencationResponse.REGISTERED.name());
                     return decryptedUsername;
                 }      
-            } catch (InvalidNameException 
-                    | InvalidPasswordException 
-                    | IOException
-                    | InvalidPhoneNumberException e) {
+            } catch (InvalidPasswordException e) {
+                sendEncrypted(AuthencationResponse.INVALID_PASSWORD.name());
+            } catch (InvalidPhoneNumberException e) {
+                sendEncrypted(AuthencationResponse.INVALID_PHONE_NUMBER.name());
+            } catch (InvalidNameException e) {
+                sendEncrypted(AuthencationResponse.INVALID_NAME.name());
+            } catch (IOException e) {
                 e.printStackTrace();
-                sendEncrypted("OOPS: server just got an exception! Please try again or contact developers.");
+                sendEncrypted(AuthencationResponse.SERVER_ERROR.name());
             }
         } else {
             sendEncrypted("Authencation type " + decryptedTypeOfAuth + " unknown.");
