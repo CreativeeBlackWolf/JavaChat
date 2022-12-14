@@ -41,7 +41,7 @@ public class Tests {
     public void invalidPhoneNumberValidationTest() {
         Number number = new Number();
 
-        String[] invalidNumbers = {"8", "    +da", "chakwdjawffnf", "89995552020qwdopqpwodkp"};
+        String[] invalidNumbers = {"8", "    +da", "chakwdjawffnf", "8)953)))347))09))22)"};
 
         for (String num : invalidNumbers) {
             assertThrows(InvalidPhoneNumberException.class, () -> number.setNumber(num));
