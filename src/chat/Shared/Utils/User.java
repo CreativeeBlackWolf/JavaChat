@@ -11,7 +11,6 @@ public class User {
     private String statusMessage;
     private String password;
     private String username;
-    
 
     public Number number;
 
@@ -35,16 +34,24 @@ public class User {
     }
 
     public String setName(String name) throws InvalidNameException {
-        if (name.isBlank() || name.contains(" ") || name.length() > 16) {
-            throw new InvalidNameException("Имя не должно быть пустым, не должно содержать пробелов и быть длиннее 16 символов.");
+        if (name.isBlank() ||
+            name.contains(" ") ||
+            name.length() > 16 ||
+            Character.isLowerCase((name.charAt(0))) ||
+            name.replaceAll("\\D", "").length() != 0) {
+            throw new InvalidNameException("Некорректное имя.");
         }
         this.name = name;
         return name;
     }
 
     public String setLastName(String lastName) throws InvalidNameException {
-        if (lastName.isBlank() || lastName.contains(" ") || lastName.length() > 20) {
-            throw new InvalidNameException("Фамилия не должна быть пустой, не должна содержать пробелов и быть длиннее 20 символов.");
+        if (lastName.isBlank() ||
+            lastName.contains(" ") ||
+            lastName.length() > 20 ||
+            Character.isLowerCase((lastName.charAt(0))) ||
+            lastName.replaceAll("\\D", "").length() != 0) {
+            throw new InvalidNameException("Некорректная фамилия.");
         }
         this.lastName = lastName;
         return lastName;
@@ -70,8 +77,8 @@ public class User {
 
         if (!(m.matches())) {
             throw new InvalidPasswordException("Пароль ОБЯЗАН НАХУЙ иметь как минимум ОДИН уникальный символ, " +
-                                           "иметь как минимум один символ в верхнем и нижнем регистре и одну цифру, " +
-                                           "а также быть от 8 до 32 символов.");
+                                                "иметь как минимум один символ в верхнем и нижнем регистре и одну цифру, " +
+                                                "а также быть от 8 до 32 символов.");
         }
         this.password = password;
         return password;
