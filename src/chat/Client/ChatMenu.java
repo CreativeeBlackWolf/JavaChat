@@ -85,7 +85,7 @@ public class ChatMenu extends JFrame implements ActionListener, FocusListener{
 
         onlineUsersArea = new JTextArea();
         onlineUsersArea.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        onlineUsersArea.setEditable(true);
+        onlineUsersArea.setEditable(false);
         rightCentralPanel.add(new JScrollPane(onlineUsersArea), BorderLayout.CENTER);
 
         try {
