@@ -66,6 +66,14 @@ public class ResponsePrinter implements Runnable {
                         chatArea.append("Список участников обновлён\n");
                     } else if (serverEvent == ServerEvent.USER_DISCONNECTED) {
                         chatArea.append("SERVER: " + line + " has disconnected.\n");
+                    } else if (serverEvent == ServerEvent.COMMAND_EXECUTED) {
+                        chatArea.append("Команда выполнена --" + line + "\n");
+                    } else if (serverEvent == ServerEvent.COMMAND_WROTE_WRONG) {
+                        chatArea.append("Команда написана неправильно --" + line + "\n");
+                    } else if (serverEvent == ServerEvent.USER_PROFILE_RECEIEVED) {
+                        chatArea.append("Профиль пользователя: " + line + "\n");
+                    } else if (serverEvent == ServerEvent.SERVER_ERROR) {
+                        chatArea.append("SERVER ERROR: " + line + "\n");
                     } else {
                         logger.warn("Got unhandled server event: " + serverEvent.name());
                         chatArea.append(event + " -- " + line + "\n");
