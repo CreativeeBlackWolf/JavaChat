@@ -67,7 +67,7 @@ public class ResponsePrinter implements Runnable {
                     } else if (serverEvent == ServerEvent.USER_DISCONNECTED) {
                         chatArea.append("SERVER: " + line + " has disconnected.\n");
                     } else if (serverEvent == ServerEvent.COMMAND_EXECUTED) {
-                        chatArea.append("Команда выполнена --" + line + "\n");
+                        chatArea.append("Команда выполнена -- " + line + "\n");
                     } else if (serverEvent == ServerEvent.COMMAND_WROTE_WRONG) {
                         chatArea.append("Команда написана неправильно --" + line + "\n");
                     } else if (serverEvent == ServerEvent.USER_PROFILE_RECEIEVED) {
