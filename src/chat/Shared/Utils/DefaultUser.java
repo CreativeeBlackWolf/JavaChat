@@ -23,13 +23,13 @@ public class DefaultUser extends User {
         Pattern p = Pattern.compile(regex);
 
         if (password.isBlank()) {
-            throw new InvalidPasswordException("Пароль ОБЯЗАН НАХУЙ НЕ быть пустым.");
+            throw new InvalidPasswordException("Пароль ОБЯЗАН НЕ быть пустым.");
         }
 
         Matcher m = p.matcher(password);
 
         if (!(m.matches())) {
-            throw new InvalidPasswordException("Пароль ОБЯЗАН НАХУЙ иметь как минимум ОДИН уникальный символ, " +
+            throw new InvalidPasswordException("Пароль ОБЯЗАН иметь как минимум ОДИН уникальный символ, " +
                                                 "иметь как минимум один символ в верхнем и нижнем регистре и одну цифру, " +
                                                 "а также быть от 8 до 32 символов.");
         }
