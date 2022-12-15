@@ -70,7 +70,7 @@ public class ResponsePrinter implements Runnable {
                         chatArea.append("SERVER: " + line + "\n");
                     } else {
                         logger.warn("Got unhandled server event: " + serverEvent.name());
-                        chatArea.append(event " -- " + line + "\n");
+                        chatArea.append(event + " -- " + line + "\n");
                     }
                 }
                 else {
