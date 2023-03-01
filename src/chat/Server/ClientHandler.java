@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ public class ClientHandler {
     // не должен содержать "__", "..", "._", "_."
     // не должен содержать иные символы, кроме латинского алфавита, чисел и "." "_"
     private static final Pattern NICKNAME_RULES = Pattern.compile("^(?=.{6,27}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$");
+    private static final Pattern PRIVATE_MESSAGE_NICKNAME_PATTERN = Pattern.compile("@(\\w+) (.*)");
 
     private static final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
     protected String username;
@@ -76,6 +78,7 @@ public class ClientHandler {
                 }
 
                 String message = security.decrypt(clientData);
+                Matcher PMMatcher = PRIVATE_MESSAGE_NICKNAME_PATTERN.matcher(message);
                 int messageArgsLength = message.split(" ").length;
                 
                 // Команды
@@ -101,6 +104,8 @@ public class ClientHandler {
                     }
                 }  else if (message.toLowerCase().startsWith(":help")) {
                     sendHelp();
+                } else if (PMMatcher.matches()) {
+                    whisperToUser(PMMatcher);
                 }
                 // Если не команда, то просто рассылаем сообщение всем.
                 else {
@@ -120,6 +125,21 @@ public class ClientHandler {
                          ":userprofile <username> - get profile of some user";
         sendEncrypted(ServerEvent.COMMAND_EXECUTED.name());
         sendEncrypted(message);
+    }
+
+    private void whisperToUser(Matcher PMMatcher) {
+        String to = PMMatcher.group(1);
+        String messageText = PMMatcher.group(2);
+        if (clients.keySet().contains(to)) {
+            ClientHandler toClient = clients.get(to);
+            toClient.sendEncrypted(ServerEvent.MESSAGE_RECEIEVED.name());
+            toClient.sendEncrypted(username + " шепчет вам: " + messageText);
+            sendEncrypted(ServerEvent.MESSAGE_RECEIEVED.name());
+            sendEncrypted("Ты шепчешь " + to + ": " + messageText);
+        } else {
+            sendEncrypted(ServerEvent.COMMAND_WROTE_WRONG.name());
+            sendEncrypted("Пользователь с никнеймом `" + to + "` не найден.");
+        }
     }
 
     /** Аутентифицирует или регистрирует пользователя
